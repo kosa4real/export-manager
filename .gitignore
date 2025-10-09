@@ -8,5 +8,7 @@ node_modules
 .env
 # vite related folder
 .vite
-/src/generated/prisma
+/src/generated/prisma 
+.vercel
+.next
 .vercel

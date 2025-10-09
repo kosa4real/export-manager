@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 61, "column": 0}, "map": {"version":3,"sources":["file:///home/muneer/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/api/suppliers/route.js"],"sourcesContent":["import { PrismaClient } from \"@prisma/client\";\nimport { NextResponse } from \"next/server\";\n\nconst prisma = new PrismaClient();\n\nexport async function POST(req) {\n  const data = await req.json();\n  const { name, contact } = data;\n\n  if (!name) {\n    return NextResponse.json({ error: \"Name is required\" }, { status: 400 });\n  }\n\n  const supplier = await prisma.supplier.create({\n    data: { name, contact },\n  });\n\n  return NextResponse.json(supplier, { status: 201 });\n}\n\nexport async function GET() {\n  const suppliers = await prisma.supplier.findMany();\n  return NextResponse.json(suppliers);\n}\n"],"names":[],"mappings":";;;;;;AAAA;AACA;;;AAEA,MAAM,SAAS,IAAI,6IAAY;AAExB,eAAe,KAAK,GAAG;IAC5B,MAAM,OAAO,MAAM,IAAI,IAAI;IAC3B,MAAM,EAAE,IAAI,EAAE,OAAO,EAAE,GAAG;IAE1B,IAAI,CAAC,MAAM;QACT,OAAO,qNAAY,CAAC,IAAI,CAAC;YAAE,OAAO;QAAmB,GAAG;YAAE,QAAQ;QAAI;IACxE;IAEA,MAAM,WAAW,MAAM,OAAO,QAAQ,CAAC,MAAM,CAAC;QAC5C,MAAM;YAAE;YAAM;QAAQ;IACxB;IAEA,OAAO,qNAAY,CAAC,IAAI,CAAC,UAAU;QAAE,QAAQ;IAAI;AACnD;AAEO,eAAe;IACpB,MAAM,YAAY,MAAM,OAAO,QAAQ,CAAC,QAAQ;IAChD,OAAO,qNAAY,CAAC,IAAI,CAAC;AAC3B","debugId":null}}]
-}
