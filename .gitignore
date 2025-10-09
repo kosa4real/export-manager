@@ -9,3 +9,4 @@ node_modules
 # vite related folder
 .vite
 /src/generated/prisma
+.vercel

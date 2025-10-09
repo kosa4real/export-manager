@@ -73,7 +73,10 @@ export default function DanEnterprisesLanding() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div
+      className="min-h-screen bg-slate-950 text-white"
+      suppressHydrationWarning
+    >
       {/* Navigation */}
       <nav
         className={`fixed w-full z-50 transition-all duration-300 ${
@@ -275,7 +278,7 @@ export default function DanEnterprisesLanding() {
               </h2>
               <p className="text-lg text-slate-300 mb-8">
                 With over 15 years of experience in international trade,
-                construction, and agriculture, we've built a reputation for
+                construction, and agriculture, {"we've"} built a reputation for
                 reliability, quality, and innovation. Our commitment to
                 excellence drives everything we do.
               </p>
@@ -351,7 +354,7 @@ export default function DanEnterprisesLanding() {
             Ready to Work Together?
           </h2>
           <p className="text-xl text-slate-300 mb-10">
-            Let's discuss how Dan Enterprises can help you achieve your business
+            {"Let's"} discuss how Dan Enterprises can help you achieve your business
             goals
           </p>
 

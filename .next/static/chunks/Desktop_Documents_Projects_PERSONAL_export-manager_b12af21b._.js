@@ -113,6 +113,7 @@ function DanEnterprisesLanding() {
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "min-h-screen bg-slate-950 text-white",
+        suppressHydrationWarning: true,
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
                 className: "fixed w-full z-50 transition-all duration-300 ".concat(isScrolled ? "bg-slate-950/95 backdrop-blur-md shadow-lg" : "bg-transparent"),
@@ -130,7 +131,7 @@ function DanEnterprisesLanding() {
                                             children: "DE"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 88,
+                                            lineNumber: 91,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -138,13 +139,13 @@ function DanEnterprisesLanding() {
                                             children: "Dan Enterprises"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 91,
+                                            lineNumber: 94,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 87,
+                                    lineNumber: 90,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -156,7 +157,7 @@ function DanEnterprisesLanding() {
                                             children: "Home"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 97,
+                                            lineNumber: 100,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -165,7 +166,7 @@ function DanEnterprisesLanding() {
                                             children: "Services"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 103,
+                                            lineNumber: 106,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -174,7 +175,7 @@ function DanEnterprisesLanding() {
                                             children: "About"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 109,
+                                            lineNumber: 112,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -183,13 +184,13 @@ function DanEnterprisesLanding() {
                                             children: "Contact"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 115,
+                                            lineNumber: 118,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 96,
+                                    lineNumber: 99,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -197,7 +198,7 @@ function DanEnterprisesLanding() {
                                     children: "Get Started"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 123,
+                                    lineNumber: 126,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -207,29 +208,29 @@ function DanEnterprisesLanding() {
                                         className: "w-6 h-6"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 132,
+                                        lineNumber: 135,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$menu$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Menu$3e$__["Menu"], {
                                         className: "w-6 h-6"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 134,
+                                        lineNumber: 137,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 127,
+                                    lineNumber: 130,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 86,
+                            lineNumber: 89,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                        lineNumber: 85,
+                        lineNumber: 88,
                         columnNumber: 9
                     }, this),
                     mobileMenuOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -243,7 +244,7 @@ function DanEnterprisesLanding() {
                                     children: "Home"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 143,
+                                    lineNumber: 146,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -252,7 +253,7 @@ function DanEnterprisesLanding() {
                                     children: "Services"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 149,
+                                    lineNumber: 152,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -261,7 +262,7 @@ function DanEnterprisesLanding() {
                                     children: "About"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 155,
+                                    lineNumber: 158,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -270,7 +271,7 @@ function DanEnterprisesLanding() {
                                     children: "Contact"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 161,
+                                    lineNumber: 164,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -278,24 +279,24 @@ function DanEnterprisesLanding() {
                                     children: "Get Started"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 167,
+                                    lineNumber: 170,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 142,
+                            lineNumber: 145,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                        lineNumber: 141,
+                        lineNumber: 144,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                lineNumber: 78,
+                lineNumber: 81,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -306,14 +307,14 @@ function DanEnterprisesLanding() {
                         className: "absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-slate-950 to-teal-900/20"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                        lineNumber: 177,
+                        lineNumber: 180,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgxNjAsIDI1NSwgMjAwLCAwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                        lineNumber: 178,
+                        lineNumber: 181,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -329,7 +330,7 @@ function DanEnterprisesLanding() {
                                                 className: "w-4 h-4 text-emerald-400"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 183,
+                                                lineNumber: 186,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -337,13 +338,13 @@ function DanEnterprisesLanding() {
                                                 children: "Connecting Nigeria to the World"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 184,
+                                                lineNumber: 187,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 182,
+                                        lineNumber: 185,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -355,13 +356,13 @@ function DanEnterprisesLanding() {
                                                 children: "Trade, Construction & Agriculture"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 191,
+                                                lineNumber: 194,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 189,
+                                        lineNumber: 192,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -369,7 +370,7 @@ function DanEnterprisesLanding() {
                                         children: "Dan Enterprises is your trusted partner in coal export, real estate development, and agricultural innovation. We deliver excellence across three dynamic sectors."
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 196,
+                                        lineNumber: 199,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -383,13 +384,13 @@ function DanEnterprisesLanding() {
                                                         className: "ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 205,
+                                                        lineNumber: 208,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 203,
+                                                lineNumber: 206,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -397,19 +398,19 @@ function DanEnterprisesLanding() {
                                                 children: "Learn More"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 207,
+                                                lineNumber: 210,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 202,
+                                        lineNumber: 205,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                lineNumber: 181,
+                                lineNumber: 184,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -422,7 +423,7 @@ function DanEnterprisesLanding() {
                                                 children: stat.number
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 217,
+                                                lineNumber: 220,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -430,30 +431,30 @@ function DanEnterprisesLanding() {
                                                 children: stat.label
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 220,
+                                                lineNumber: 223,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 216,
+                                        lineNumber: 219,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                lineNumber: 214,
+                                lineNumber: 217,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                        lineNumber: 180,
+                        lineNumber: 183,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                lineNumber: 176,
+                lineNumber: 179,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -470,7 +471,7 @@ function DanEnterprisesLanding() {
                                     children: "Our Services"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 231,
+                                    lineNumber: 234,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -478,13 +479,13 @@ function DanEnterprisesLanding() {
                                     children: "Comprehensive solutions across multiple industries, powered by expertise and innovation"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 234,
+                                    lineNumber: 237,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 230,
+                            lineNumber: 233,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -497,7 +498,7 @@ function DanEnterprisesLanding() {
                                             children: service.icon
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 246,
+                                            lineNumber: 249,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -505,7 +506,7 @@ function DanEnterprisesLanding() {
                                             children: service.title
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 249,
+                                            lineNumber: 252,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -513,7 +514,7 @@ function DanEnterprisesLanding() {
                                             children: service.description
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 250,
+                                            lineNumber: 253,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -525,41 +526,41 @@ function DanEnterprisesLanding() {
                                                             className: "w-4 h-4 text-emerald-400 mr-2 flex-shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                            lineNumber: 257,
+                                                            lineNumber: 260,
                                                             columnNumber: 23
                                                         }, this),
                                                         feature
                                                     ]
                                                 }, fidx, true, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 253,
+                                                    lineNumber: 256,
                                                     columnNumber: 21
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 251,
+                                            lineNumber: 254,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, idx, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 242,
+                                    lineNumber: 245,
                                     columnNumber: 15
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 240,
+                            lineNumber: 243,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                    lineNumber: 229,
+                    lineNumber: 232,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                lineNumber: 228,
+                lineNumber: 231,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -577,15 +578,19 @@ function DanEnterprisesLanding() {
                                         children: "Why Choose Dan Enterprises?"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 273,
+                                        lineNumber: 276,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-lg text-slate-300 mb-8",
-                                        children: "With over 15 years of experience in international trade, construction, and agriculture, we've built a reputation for reliability, quality, and innovation. Our commitment to excellence drives everything we do."
-                                    }, void 0, false, {
+                                        children: [
+                                            "With over 15 years of experience in international trade, construction, and agriculture, ",
+                                            "we've",
+                                            " built a reputation for reliability, quality, and innovation. Our commitment to excellence drives everything we do."
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 276,
+                                        lineNumber: 279,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -600,12 +605,12 @@ function DanEnterprisesLanding() {
                                                             className: "w-6 h-6 text-emerald-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                            lineNumber: 286,
+                                                            lineNumber: 289,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 285,
+                                                        lineNumber: 288,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -615,7 +620,7 @@ function DanEnterprisesLanding() {
                                                                 children: "Trusted Partner"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                                lineNumber: 289,
+                                                                lineNumber: 292,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -623,19 +628,19 @@ function DanEnterprisesLanding() {
                                                                 children: "Proven track record with clients across multiple continents"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                                lineNumber: 292,
+                                                                lineNumber: 295,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 288,
+                                                        lineNumber: 291,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 284,
+                                                lineNumber: 287,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -647,12 +652,12 @@ function DanEnterprisesLanding() {
                                                             className: "w-6 h-6 text-emerald-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                            lineNumber: 301,
+                                                            lineNumber: 304,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 300,
+                                                        lineNumber: 303,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -662,7 +667,7 @@ function DanEnterprisesLanding() {
                                                                 children: "Growth Focused"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                                lineNumber: 304,
+                                                                lineNumber: 307,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -670,19 +675,19 @@ function DanEnterprisesLanding() {
                                                                 children: "Continuously expanding our capabilities and market reach"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                                lineNumber: 307,
+                                                                lineNumber: 310,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 303,
+                                                        lineNumber: 306,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 299,
+                                                lineNumber: 302,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -694,12 +699,12 @@ function DanEnterprisesLanding() {
                                                             className: "w-6 h-6 text-emerald-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                            lineNumber: 315,
+                                                            lineNumber: 318,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 314,
+                                                        lineNumber: 317,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -709,7 +714,7 @@ function DanEnterprisesLanding() {
                                                                 children: "Global Network"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                                lineNumber: 318,
+                                                                lineNumber: 321,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -717,31 +722,31 @@ function DanEnterprisesLanding() {
                                                                 children: "Strategic partnerships spanning multiple countries and industries"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                                lineNumber: 321,
+                                                                lineNumber: 324,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 317,
+                                                        lineNumber: 320,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                lineNumber: 313,
+                                                lineNumber: 316,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 283,
+                                        lineNumber: 286,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                lineNumber: 272,
+                                lineNumber: 275,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -751,7 +756,7 @@ function DanEnterprisesLanding() {
                                         className: "aspect-square bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-3xl"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 331,
+                                        lineNumber: 334,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -764,7 +769,7 @@ function DanEnterprisesLanding() {
                                                     children: "15+"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 334,
+                                                    lineNumber: 337,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -772,40 +777,40 @@ function DanEnterprisesLanding() {
                                                     children: "Years of Excellence"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 337,
+                                                    lineNumber: 340,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 333,
+                                            lineNumber: 336,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                        lineNumber: 332,
+                                        lineNumber: 335,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                lineNumber: 330,
+                                lineNumber: 333,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                        lineNumber: 271,
+                        lineNumber: 274,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                    lineNumber: 270,
+                    lineNumber: 273,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                lineNumber: 269,
+                lineNumber: 272,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -819,15 +824,18 @@ function DanEnterprisesLanding() {
                             children: "Ready to Work Together?"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 350,
+                            lineNumber: 353,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                             className: "text-xl text-slate-300 mb-10",
-                            children: "Let's discuss how Dan Enterprises can help you achieve your business goals"
-                        }, void 0, false, {
+                            children: [
+                                "Let's",
+                                " discuss how Dan Enterprises can help you achieve your business goals"
+                            ]
+                        }, void 0, true, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 353,
+                            lineNumber: 356,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -838,7 +846,7 @@ function DanEnterprisesLanding() {
                                     children: "Contact Us"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 359,
+                                    lineNumber: 362,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -846,24 +854,24 @@ function DanEnterprisesLanding() {
                                     children: "Request Quote"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 362,
+                                    lineNumber: 365,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 358,
+                            lineNumber: 361,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                    lineNumber: 349,
+                    lineNumber: 352,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                lineNumber: 348,
+                lineNumber: 351,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("footer", {
@@ -884,7 +892,7 @@ function DanEnterprisesLanding() {
                                                     children: "DE"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 375,
+                                                    lineNumber: 378,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -892,13 +900,13 @@ function DanEnterprisesLanding() {
                                                     children: "Dan Enterprises"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 378,
+                                                    lineNumber: 381,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 374,
+                                            lineNumber: 377,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -906,13 +914,13 @@ function DanEnterprisesLanding() {
                                             children: "Building bridges in trade, construction, and agriculture since 2010"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 380,
+                                            lineNumber: 383,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 373,
+                                    lineNumber: 376,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -922,7 +930,7 @@ function DanEnterprisesLanding() {
                                             children: "Services"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 387,
+                                            lineNumber: 390,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -935,12 +943,12 @@ function DanEnterprisesLanding() {
                                                         children: "Coal Export"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 390,
+                                                        lineNumber: 393,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 389,
+                                                    lineNumber: 392,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -950,12 +958,12 @@ function DanEnterprisesLanding() {
                                                         children: "Real Estate"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 398,
+                                                        lineNumber: 401,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 397,
+                                                    lineNumber: 400,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -965,24 +973,24 @@ function DanEnterprisesLanding() {
                                                         children: "Agri Business"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 406,
+                                                        lineNumber: 409,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 405,
+                                                    lineNumber: 408,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 388,
+                                            lineNumber: 391,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 386,
+                                    lineNumber: 389,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -992,7 +1000,7 @@ function DanEnterprisesLanding() {
                                             children: "Company"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 417,
+                                            lineNumber: 420,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -1005,12 +1013,12 @@ function DanEnterprisesLanding() {
                                                         children: "About Us"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 420,
+                                                        lineNumber: 423,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 419,
+                                                    lineNumber: 422,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1020,12 +1028,12 @@ function DanEnterprisesLanding() {
                                                         children: "Careers"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 428,
+                                                        lineNumber: 431,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 427,
+                                                    lineNumber: 430,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1035,24 +1043,24 @@ function DanEnterprisesLanding() {
                                                         children: "Contact"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 436,
+                                                        lineNumber: 439,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 435,
+                                                    lineNumber: 438,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 418,
+                                            lineNumber: 421,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 416,
+                                    lineNumber: 419,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1062,7 +1070,7 @@ function DanEnterprisesLanding() {
                                             children: "Legal"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 447,
+                                            lineNumber: 450,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -1075,12 +1083,12 @@ function DanEnterprisesLanding() {
                                                         children: "Privacy Policy"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 450,
+                                                        lineNumber: 453,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 449,
+                                                    lineNumber: 452,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -1090,30 +1098,30 @@ function DanEnterprisesLanding() {
                                                         children: "Terms of Service"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                        lineNumber: 458,
+                                                        lineNumber: 461,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                                    lineNumber: 457,
+                                                    lineNumber: 460,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                            lineNumber: 448,
+                                            lineNumber: 451,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                    lineNumber: 446,
+                                    lineNumber: 449,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 372,
+                            lineNumber: 375,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$Documents$2f$Projects$2f$PERSONAL$2f$export$2d$manager$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1122,23 +1130,23 @@ function DanEnterprisesLanding() {
                                 children: "© 2025 Dan Enterprises. All rights reserved."
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                                lineNumber: 470,
+                                lineNumber: 473,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                            lineNumber: 469,
+                            lineNumber: 472,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                    lineNumber: 371,
+                    lineNumber: 374,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/Documents/Projects/PERSONAL/export-manager/src/app/page.js",
-                lineNumber: 370,
+                lineNumber: 373,
                 columnNumber: 7
             }, this)
         ]
