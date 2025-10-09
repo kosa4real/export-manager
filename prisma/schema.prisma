@@ -1,51 +1,266 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ============================================
+// PRISMA SCHEMA FOR DAN ENTERPRISES
+// Coal Export Management System
+// ============================================
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// This tells Prisma how to generate the client library
 generator client {
   provider = "prisma-client-js"
+  // Output path: Where the generated Prisma client will be saved
   output   = "../src/generated/prisma"
 }
 
+// This tells Prisma which database to use
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"  // We're using PostgreSQL database
+  url      = env("DATABASE_URL")  // Connection string from .env file
 }
 
-model Supplier {
-  id        Int      @id @default(autoincrement())
-  name      String
-  contact   String?
-  createdAt DateTime @default(now())
-  supplies  Supply[]
+// ============================================
+// USER MODEL - For Authentication & Authorization
+// ============================================
+// This stores information about people who can log into the system
+model User {
+  id           Int       @id @default(autoincrement())  // Auto-incrementing ID (1, 2, 3...)
+  username     String    @unique @db.VarChar(50)        // Login name (must be unique)
+  email        String    @unique @db.VarChar(100)       // Email (must be unique)
+  passwordHash String    @db.VarChar(255)               // Encrypted password (never store plain text!)
+  role         UserRole  @default(STAFF)                // User's role (ADMIN, STAFF, or INVESTOR)
+  isActive     Boolean   @default(true)                 // Can be deactivated without deleting
+  lastLogin    DateTime?                                // Track last login time (optional)
+  createdAt    DateTime  @default(now())                // When user was created
+  updatedAt    DateTime  @updatedAt                     // Auto-updates when record changes
+  
+  // AUDIT TRAIL RELATIONSHIPS
+  // These track WHO created or updated records
+  // We use different relation names to avoid conflicts
+  suppliesCreated      CoalSupply[]     @relation("SupplyCreatedBy")
+  suppliesUpdated      CoalSupply[]     @relation("SupplyUpdatedBy")
+  exportsCreated       ExportShipment[] @relation("ExportCreatedBy")
+  exportsUpdated       ExportShipment[] @relation("ExportUpdatedBy")
+  investorsCreated     Investor[]       @relation("InvestorCreatedBy")
+  investorsUpdated     Investor[]       @relation("InvestorUpdatedBy")
+  supplyExportsCreated SupplyExport[]   @relation("SupplyExportCreatedBy")
+  supplyExportsUpdated SupplyExport[]   @relation("SupplyExportUpdatedBy")
+
+  // Map to database table name (uses snake_case)
+  @@map("users")
 }
 
-model Supply {
-  id           Int       @id @default(autoincrement())
-  supplier     Supplier  @relation(fields: [supplierId], references: [id])
-  supplierId   Int
-  supplyDate   DateTime
-  quantity     Int
-  amountPaid   Float
-  gradeCleanA  Int
-  gradeCleanB  Int
-  rejected     Int
-  dust         Int
-  wood         Int
-  createdAt    DateTime @default(now())
+// ============================================
+// USER ROLE ENUM
+// ============================================
+// Defines the three types of users in the system
+enum UserRole {
+  ADMIN      // Full access - Owner/Manager (sees ALL data including financials)
+  STAFF      // Limited access - Employees (no financial data)
+  INVESTOR   // View only - Investors (only statistics and their own data)
 }
 
+// ============================================
+// COAL SUPPLIER MODEL
+// ============================================
+// Stores information about companies/people who supply coal to us
+model CoalSupplier {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique @db.VarChar(100)      // Supplier name (must be unique)
+  contactInfo  String?        @db.VarChar(100)              // Phone number (optional)
+  email        String?        @db.VarChar(100)              // Email (optional)
+  fullAddress  String?        @db.Text                      // Full address (optional, can be long)
+  status       SupplierStatus @default(ACTIVE)              // Is supplier active?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  // RELATIONSHIP: One supplier can have many supplies
+  supplies     CoalSupply[]
+
+  @@map("suppliers")  // Table name in database
+}
+
+// ============================================
+// COAL SUPPLY MODEL
+// ============================================
+// Records each delivery of coal we receive from suppliers
+model CoalSupply {
+  id            Int            @id @default(autoincrement())
+  
+  // RELATIONSHIP: Each supply belongs to one supplier
+  supplier      CoalSupplier   @relation(fields: [supplierId], references: [id])
+  supplierId    Int            // Foreign key to CoalSupplier
+  
+  supplyDate    DateTime       // Date we received the coal
+  quantityBags  Int            // Total number of bags received
+  
+  // 💰 SENSITIVE FIELDS - Only ADMIN can see these
+  unitPrice     Decimal        @db.Decimal(12, 2)  // Price per bag (e.g., ₦500.00)
+  amountPaid    Decimal        @db.Decimal(12, 2)  // Total amount paid to supplier
+  paymentStatus PaymentStatus  @default(BALANCED)   // Payment status
+  balanceAmount Decimal        @default(0) @db.Decimal(12, 2)  // Overpayment (+) or debt (-)
+  
+  // QUALITY GRADES - How we sort the coal (visible to all roles)
+  gradeA        Int            @default(0)  // Best quality bags
+  gradeB        Int            @default(0)  // Good quality bags
+  rejectedBags  Int            @default(0)  // Poor quality (rejected)
+  dustBags      Int            @default(0)  // Dust content
+  woodBags      Int            @default(0)  // Wood contamination
+  
+  notes         String?        @db.Text     // Additional notes (optional)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // AUDIT TRAIL: Track who created/updated this record
+  createdBy     User?          @relation("SupplyCreatedBy", fields: [createdById], references: [id])
+  createdById   Int?
+  updatedBy     User?          @relation("SupplyUpdatedBy", fields: [updatedById], references: [id])
+  updatedById   Int?
+  
+  // RELATIONSHIP: Supply can be part of multiple exports (via junction table)
+  exports       SupplyExport[]
+
+  // INDEXES: Make database queries faster
+  @@index([supplierId])              // Fast lookup by supplier
+  @@index([supplyDate])              // Fast lookup by date
+  @@unique([supplierId, supplyDate]) // Prevent duplicate entries for same supplier on same day
+  @@map("supplies")
+}
+
+// ============================================
+// EXPORT SHIPMENT MODEL
+// ============================================
+// Records each shipment of coal we export to other countries
+model ExportShipment {
+  id                 Int            @id @default(autoincrement())
+  exportDate         DateTime       // Date of export
+  quantityBags       Int            // Number of bags in this shipment
+  departureDate      DateTime       // When container left Nigeria
+  arrivalDate        DateTime?      // When it arrived (optional - might not know yet)
+  destinationCountry String         @db.VarChar(100)  // Country we're shipping to
+  destinationCity    String         @db.VarChar(100)  // City we're shipping to
+  clearingAgent      String         @db.VarChar(100)  // Agent who cleared container in Nigeria
+  buyer              String         @db.VarChar(100)  // Customer who bought the coal
+  
+  // 💰 SENSITIVE FIELDS - Only ADMIN can see these
+  amountReceived     Decimal        @db.Decimal(12, 2)  // Sale price
+  clearingFee        Decimal        @db.Decimal(12, 2)  // Fees paid for clearing
+  netProfit          Decimal        @db.Decimal(12, 2)  // Profit after fees
+  
+  containerNumber    String?        @unique @db.VarChar(50)  // Container ID (optional, unique)
+  status             ShipmentStatus @default(PENDING)         // Current status of shipment
+  notes              String?        @db.Text                  // Additional notes
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  
+  // AUDIT TRAIL: Track who created/updated this record
+  createdBy          User?          @relation("ExportCreatedBy", fields: [createdById], references: [id])
+  createdById        Int?
+  updatedBy          User?          @relation("ExportUpdatedBy", fields: [updatedById], references: [id])
+  updatedById        Int?
+  
+  // RELATIONSHIP: Export can contain coal from multiple supplies
+  supplies           SupplyExport[]
+
+  // INDEXES: Make database queries faster
+  @@index([exportDate])
+  @@index([destinationCountry])
+  @@index([departureDate])
+  @@map("exports")
+}
+
+// ============================================
+// INVESTOR MODEL
+// ============================================
+// Records information about people who invest money in the business
 model Investor {
-  id                  Int      @id @default(autoincrement())
-  name                String
-  investmentDate      DateTime
-  amountInvested      Float
-  bankUsed            String
-  amountReceived      Float
-  riyalRate           Float
-  sharingFormula      String
-  containerEquivalent Float
-  createdAt           DateTime @default(now())
+  id                  Int            @id @default(autoincrement())
+  name                String         @db.VarChar(100)  // Investor name
+  contactInfo         String?        @db.VarChar(100)  // Phone (optional)
+  email               String?        @db.VarChar(100)  // Email (optional)
+  investmentDate      DateTime       // When they invested
+  
+  // 💰 SENSITIVE FIELDS - Only ADMIN can see these
+  amountInvested      Decimal        @db.Decimal(12, 2)  // Amount they invested
+  currency            String         @default("USD") @db.VarChar(3)  // Currency (USD, SAR, etc.)
+  bankName            String         @db.VarChar(100)    // Bank used for transfer
+  amountReceived      Decimal        @db.Decimal(12, 2)  // Amount received in local currency
+  exchangeRate        Decimal        @db.Decimal(8, 4)   // Exchange rate used
+  profitShare         String         @db.VarChar(50)     // Profit sharing agreement (e.g., "50/50")
+  containerEquivalent Decimal?       @db.Decimal(10, 2)  // Worth in containers (optional)
+  
+  status              InvestorStatus @default(ACTIVE)     // Current status
+  isActive            Boolean        @default(true)       // Can be deactivated
+  notes               String?        @db.Text             // Additional notes
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  
+  // AUDIT TRAIL: Track who created/updated this record
+  createdBy           User?          @relation("InvestorCreatedBy", fields: [createdById], references: [id])
+  createdById         Int?
+  updatedBy           User?          @relation("InvestorUpdatedBy", fields: [updatedById], references: [id])
+  updatedById         Int?
+
+  // INDEXES: Make database queries faster
+  @@index([investmentDate])
+  @@index([status])
+  @@unique([name, investmentDate])  // Prevent duplicate entries
+  @@map("investors")
+}
+
+// ============================================
+// SUPPLY-EXPORT JUNCTION TABLE
+// ============================================
+// This is the "magic" table that tracks which supplies went into which exports
+// Example: Export #3 used 5000 bags from Supply #5 and 8000 bags from Supply #8
+model SupplyExport {
+  supplyId     Int            @map("supply_id")   // Which supply?
+  exportId     Int            @map("export_id")   // Which export?
+  quantityBags Int                                // How many bags from this supply?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  // AUDIT TRAIL
+  createdBy    User?          @relation("SupplyExportCreatedBy", fields: [createdById], references: [id])
+  createdById  Int?
+  updatedBy    User?          @relation("SupplyExportUpdatedBy", fields: [updatedById], references: [id])
+  updatedById  Int?
+
+  // RELATIONSHIPS: Links to Supply and Export
+  supply       CoalSupply     @relation(fields: [supplyId], references: [id])
+  export       ExportShipment @relation(fields: [exportId], references: [id])
+
+  // COMPOSITE PRIMARY KEY: The combination of supplyId and exportId must be unique
+  @@id([supplyId, exportId])
+  @@map("supply_exports")
+}
+
+// ============================================
+// ENUMS (Dropdown Options)
+// ============================================
+
+// Supplier can be in one of these states
+enum SupplierStatus {
+  ACTIVE     // Currently supplying coal
+  INACTIVE   // Temporarily not supplying
+  SUSPENDED  // Suspended due to issues (quality, payment, etc.)
+}
+
+// Payment status for supplies
+enum PaymentStatus {
+  BALANCED   // Paid exactly the right amount
+  OVERPAID   // Paid more than owed (supplier owes us money)
+  UNDERPAID  // Paid less than owed (we owe supplier money)
+}
+
+// Shipment tracking status
+enum ShipmentStatus {
+  PENDING    // Not yet shipped
+  SHIPPED    // On the way
+  DELIVERED  // Arrived at destination
+  CANCELLED  // Shipment cancelled
+}
+
+// Investor investment status
+enum InvestorStatus {
+  ACTIVE    // Investment is active
+  RETURNED  // Investment has been returned
+  PARTIAL   // Partial return made
 }
