@@ -1,0 +1,11 @@
+node_modules
+/dist
+.vite/
+
+
+# local env files 
+*.local
+.env
+# vite related folder
+.vite
+/src/generated/prisma
