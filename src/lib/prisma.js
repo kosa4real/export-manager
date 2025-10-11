@@ -1,6 +1,5 @@
 // src/lib/prisma.js
-// import { PrismaClient } from "@/generated/prisma";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma";
 const globalForPrisma = globalThis;
 
 export const prisma =
