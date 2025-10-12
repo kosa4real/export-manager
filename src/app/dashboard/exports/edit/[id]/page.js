@@ -38,7 +38,7 @@ export default function EditExportPage({ params }) {
     if (status === "authenticated" && id) {
       fetchExport();
     }
-  }, [status, id, fetchExport]);
+  }, [status, id]);
 
   const fetchExport = async () => {
     try {

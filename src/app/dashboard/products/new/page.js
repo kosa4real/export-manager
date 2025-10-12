@@ -30,7 +30,7 @@ export default function NewSupplyPage() {
     if (status === "authenticated") {
       fetchSuppliers();
     }
-  }, [status, fetchSuppliers]);
+  }, [status]);
 
   // Auto-calculate balance
   useEffect(() => {

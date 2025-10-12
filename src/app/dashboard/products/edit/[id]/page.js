@@ -33,7 +33,7 @@ export default function EditSupplyPage({ params }) {
       fetchSuppliers();
       fetchSupply();
     }
-  }, [status, fetchSuppliers, fetchSupply]);
+  }, [status]);
 
   // Auto-calculate balance for admin
   useEffect(() => {

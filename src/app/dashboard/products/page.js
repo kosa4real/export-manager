@@ -86,7 +86,7 @@ export default function SuppliesPage() {
       fetchStats();
       fetchSuppliers();
     }
-  }, [status, fetchSupplies, fetchStats, fetchSuppliers]);
+  }, [status]);
 
   const fetchStats = async () => {
     try {
