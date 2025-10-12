@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth-options";
 
 // Get all supplies
 export async function GET(request) {
@@ -80,7 +80,10 @@ export async function POST(request) {
     // Basic validation
     if (!data.supplierId || !data.supplyDate || data.quantityBags == null) {
       return NextResponse.json(
-        { error: "Missing required fields: supplierId, supplyDate, quantityBags" },
+        {
+          error:
+            "Missing required fields: supplierId, supplyDate, quantityBags",
+        },
         { status: 400 }
       );
     }
