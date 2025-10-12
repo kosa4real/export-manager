@@ -1,77 +1,86 @@
-import { prisma } from "@/lib/prisma";
+// app/api/suppliers/route.js
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
 
-export async function POST(req) {
+// Get all suppliers
+export async function GET(request) {
+  // Authenticate user first
+  // Only authenticated users can fetch suppliers
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "10");
+  const skip = (page - 1) * limit;
+  const status = searchParams.get("status");
+
   try {
-    const data = await req.json();
-    const {
-      supplierId,
-      supplyDate,
-      quantity,
-      amountPaid,
-      gradeCleanA,
-      gradeCleanB,
-      rejected,
-      dust,
-      wood,
-    } = data;
-
-    if (!supplierId || !supplyDate || !quantity || amountPaid === undefined) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    const supply = await prisma.supply.create({
-      data: {
-        supplierId: parseInt(supplierId),
-        supplyDate: new Date(supplyDate),
-        quantity: parseInt(quantity),
-        amountPaid: parseFloat(amountPaid),
-        gradeCleanA: parseInt(gradeCleanA) || 0,
-        gradeCleanB: parseInt(gradeCleanB) || 0,
-        rejected: parseInt(rejected) || 0,
-        dust: parseInt(dust) || 0,
-        wood: parseInt(wood) || 0,
-      },
-      include: {
-        supplier: true,
-      },
+    const suppliers = await prisma.coalSupplier.findMany({
+      where: status ? { status } : undefined,
+      skip,
+      take: limit,
+      orderBy: { name: "asc" },
     });
 
-    return NextResponse.json(supply, { status: 201 });
+    // Optional: Also return total count for pagination
+    const total = await prisma.coalSupplier.count({
+      where: status ? { status } : undefined,
+    });
+
+    return NextResponse.json({ suppliers, total, page, limit });
   } catch (error) {
-    console.error("Error creating supply:", error);
+    console.error("Error fetching suppliers:", error);
     return NextResponse.json(
-      { error: "Failed to create supply" },
+      { error: "Failed to fetch suppliers" },
       { status: 500 }
     );
   }
 }
 
-export async function GET(req) {
+// Create a new supplier
+export async function POST(request) {
+  const session = await getServerSession(authOptions);
+  if (!session || !["ADMIN", "STAFF"].includes(session.user.role)) {
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  }
+
   try {
-    const url = new URL(req.url);
-    const supplierId = url.searchParams.get("supplierId");
+    const data = await request.json();
 
-    const where = supplierId ? { supplierId: parseInt(supplierId) } : {};
+    // Basic validation
+    if (!data.name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
 
-    const supplies = await prisma.supply.findMany({
-      where,
-      orderBy: {
-        supplyDate: "desc",
-      },
-      include: {
-        supplier: true,
+    const supplier = await prisma.coalSupplier.create({
+      data: {
+        name: data.name.trim(),
+        contactInfo: data.contactInfo?.trim() || null,
+        email: data.email?.trim() || null,
+        fullAddress: data.fullAddress?.trim() || null,
+        status: data.status || "ACTIVE",
       },
     });
 
-    return NextResponse.json(supplies);
+    return NextResponse.json(supplier, { status: 201 });
   } catch (error) {
-    console.error("Error fetching supplies:", error);
+    console.error("Error creating supplier:", error);
+
+    // Handle Prisma unique constraint error
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { error: "A supplier with this name already exists" },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch supplies" },
+      { error: "Failed to create supplier" },
       { status: 500 }
     );
   }
