@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth-options";
 
 // Helper: Validate and parse ID
 function parseId(id) {
@@ -67,10 +67,7 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error("GET supply error:", error);
     if (error.message === "Invalid ID") {
-      return NextResponse.json(
-        { error: "Invalid supply ID" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid supply ID" }, { status: 400 });
     }
     return NextResponse.json(
       { error: "Failed to fetch supply" },
@@ -180,10 +177,7 @@ export async function PUT(request, { params }) {
     }
 
     if (error.message === "Invalid ID") {
-      return NextResponse.json(
-        { error: "Invalid supply ID" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid supply ID" }, { status: 400 });
     }
 
     return NextResponse.json(
@@ -229,10 +223,7 @@ export async function DELETE(request, { params }) {
     }
 
     if (error.message === "Invalid ID") {
-      return NextResponse.json(
-        { error: "Invalid supply ID" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid supply ID" }, { status: 400 });
     }
 
     return NextResponse.json(

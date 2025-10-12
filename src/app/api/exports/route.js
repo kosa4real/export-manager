@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth-options";
 
 // GET /api/exports — Fetch paginated export shipments
 export async function GET(request) {
@@ -90,7 +90,10 @@ export async function POST(request) {
     // ✅ Validate required fields
     if (!data.exportDate || !data.quantityBags || !data.departureDate) {
       return NextResponse.json(
-        { error: "Missing required fields: exportDate, quantityBags, departureDate" },
+        {
+          error:
+            "Missing required fields: exportDate, quantityBags, departureDate",
+        },
         { status: 400 }
       );
     }
@@ -104,7 +107,9 @@ export async function POST(request) {
       if (VALID_STATUSES.includes(upperStatus)) {
         statusValue = upperStatus;
       } else {
-        console.warn(`Invalid status received: "${data.status}". Using default "PENDING".`);
+        console.warn(
+          `Invalid status received: "${data.status}". Using default "PENDING".`
+        );
       }
     }
 
@@ -164,9 +169,9 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error creating export:", error);
     return NextResponse.json(
-      { 
+      {
         error: "Failed to create export",
-        details: error.message 
+        details: error.message,
       },
       { status: 500 }
     );
