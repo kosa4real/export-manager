@@ -4,6 +4,8 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import DetailModal from "@/components/DetailModal";
+import SupplyDetailContent from "@/components/SupplyDetailContent";
 
 // Helper: Safely format currency
 const formatCurrency = (value) => {
@@ -476,262 +478,21 @@ export default function SuppliesPage() {
         </div>
       </div>
 
-      {/* Supply Detail Modal - Improved */}
-      {selectedSupply && (
-        <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-          onClick={() => setSelectedSupply(null)}
-        >
-          <div
-            className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-slate-700/50 shadow-2xl animate-in slide-in-from-bottom-4 duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border-b border-slate-700/50 p-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">
-                    Supply Details
-                  </h2>
-                  <p className="text-slate-400 text-sm">
-                    Supply #{selectedSupply.id}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedSupply(null)}
-                  className="text-slate-400 hover:text-white transition-colors duration-200 p-1 hover:bg-slate-700/50 rounded-lg"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Basic Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-emerald-400 flex items-center gap-2 mb-3">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    Basic Information
-                  </h3>
-                  <div className="bg-slate-800/50 rounded-lg p-4 space-y-3 border border-slate-700/30">
-                    <div className="flex justify-between items-start">
-                      <span className="text-slate-400 text-sm">Supplier</span>
-                      <span className="text-white font-medium text-right">
-                        {selectedSupply.supplier.name}
-                      </span>
-                    </div>
-                    <div className="border-t border-slate-700/30 pt-3 flex justify-between items-start">
-                      <span className="text-slate-400 text-sm">
-                        Supply Date
-                      </span>
-                      <span className="text-white font-medium">
-                        {new Date(selectedSupply.supplyDate).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </span>
-                    </div>
-                    <div className="border-t border-slate-700/30 pt-3 flex justify-between items-start">
-                      <span className="text-slate-400 text-sm">Total Bags</span>
-                      <span className="text-emerald-400 font-bold text-lg">
-                        {selectedSupply.quantityBags.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Grade Breakdown */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-cyan-400 flex items-center gap-2 mb-3">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                      />
-                    </svg>
-                    Grade Breakdown
-                  </h3>
-                  <div className="bg-slate-800/50 rounded-lg p-4 space-y-3 border border-slate-700/30">
-                    {getGradeDetails(selectedSupply).map((item, idx) => (
-                      <div
-                        key={idx}
-                        className={
-                          idx > 0 ? "border-t border-slate-700/30 pt-3" : ""
-                        }
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-400 text-sm">
-                            {item.label}
-                          </span>
-                          <span className={`font-bold text-lg ${item.color}`}>
-                            {item.value.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Financial Information (Admin Only) */}
-                {isAdmin && (
-                  <div className="space-y-4 md:col-span-2">
-                    <h3 className="text-lg font-semibold text-green-400 flex items-center gap-2 mb-3">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      Financial Details
-                    </h3>
-                    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/30">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <span className="text-slate-400 text-sm block mb-1">
-                            Unit Price
-                          </span>
-                          <span className="text-white font-bold text-xl">
-                            ₦{formatCurrency(selectedSupply.unitPrice)}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 text-sm block mb-1">
-                            Amount Paid
-                          </span>
-                          <span className="text-green-400 font-bold text-xl">
-                            ₦{formatCurrency(selectedSupply.amountPaid)}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 text-sm block mb-1">
-                            Balance
-                          </span>
-                          <span
-                            className={`font-bold text-xl ${
-                              parseFloat(selectedSupply.balanceAmount) > 0
-                                ? "text-amber-400"
-                                : "text-emerald-400"
-                            }`}
-                          >
-                            ₦{formatCurrency(selectedSupply.balanceAmount)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-slate-700/30">
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-400 text-sm">
-                            Payment Status
-                          </span>
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                              parseFloat(selectedSupply.balanceAmount) > 0
-                                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                                : "bg-green-500/20 text-green-400 border border-green-500/30"
-                            }`}
-                          >
-                            {selectedSupply.paymentStatus.replace("_", " ")}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Notes */}
-                {selectedSupply.notes && (
-                  <div className="space-y-4 md:col-span-2">
-                    <h3 className="text-lg font-semibold text-purple-400 flex items-center gap-2 mb-3">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                        />
-                      </svg>
-                      Additional Notes
-                    </h3>
-                    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/30">
-                      <p className="text-slate-300 text-sm leading-relaxed">
-                        {selectedSupply.notes}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="border-t border-slate-700/50 p-6 bg-slate-900/50">
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setSelectedSupply(null)}
-                  className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all duration-200 font-medium"
-                >
-                  Close
-                </button>
-                {canEdit && (
-                  <Link
-                    href={`/dashboard/products/edit/${selectedSupply.id}`}
-                    className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-emerald-500/30"
-                  >
-                    Edit Supply
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Supply Detail Modal */}
+      <DetailModal
+        isOpen={!!selectedSupply}
+        onClose={() => setSelectedSupply(null)}
+        title="Supply Details"
+        subtitle={selectedSupply ? `Supply #${selectedSupply.id}` : ""}
+        editLink={
+          selectedSupply ? `/dashboard/products/edit/${selectedSupply.id}` : ""
+        }
+        canEdit={canEdit}
+      >
+        {selectedSupply && (
+          <SupplyDetailContent supplyData={selectedSupply} isAdmin={isAdmin} />
+        )}
+      </DetailModal>
     </>
   );
 }
