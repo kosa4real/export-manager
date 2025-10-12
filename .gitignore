@@ -13,3 +13,5 @@ node_modules
 .next
 .vercel
 .vscode
+ESLINT_FIXES_SUMMARY.md
+RUNTIME_ERROR_FIX_SUMMARY.md

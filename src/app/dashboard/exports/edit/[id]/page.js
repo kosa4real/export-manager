@@ -89,7 +89,7 @@ export default function EditExportPage({ params }) {
     return (
       <div className="p-6 max-w-4xl mx-auto text-white">
         <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 text-red-400">
-          Access denied. You don't have permission to edit exports.
+          Access denied. You don&apos;t have permission to edit exports.
         </div>
       </div>
     );

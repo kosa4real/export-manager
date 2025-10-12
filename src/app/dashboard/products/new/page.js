@@ -32,25 +32,9 @@ export default function NewSupplyPage() {
     }
   }, [status]);
 
-  const fetchSuppliers = async () => {
-    try {
-      const response = await fetch("/api/suppliers?limit=1000");
-      if (!response.ok) throw new Error("Failed to fetch suppliers");
-      const data = await response.json();
-      setSuppliers(data.suppliers || data);
-    } catch (err) {
-      setError("Error fetching suppliers");
-    }
-  };
-
-  if (status === "loading") return <div className="p-6">Loading...</div>;
-  if (!session || !["ADMIN", "STAFF"].includes(session.user.role))
-    redirect("/login");
-
-  const isAdmin = session.user.role === "ADMIN";
-
   // Auto-calculate balance
   useEffect(() => {
+    const isAdmin = session?.user?.role === "ADMIN";
     if (!isAdmin || !formData.quantityBags || !formData.unitPrice) return;
 
     const qty = parseFloat(formData.quantityBags);
@@ -73,7 +57,29 @@ export default function NewSupplyPage() {
         setFormData((prev) => ({ ...prev, paymentStatus: "BALANCED" }));
       }
     }
-  }, [formData.quantityBags, formData.unitPrice, formData.amountPaid, isAdmin]);
+  }, [
+    formData.quantityBags,
+    formData.unitPrice,
+    formData.amountPaid,
+    session?.user?.role,
+  ]);
+
+  const fetchSuppliers = async () => {
+    try {
+      const response = await fetch("/api/suppliers?limit=1000");
+      if (!response.ok) throw new Error("Failed to fetch suppliers");
+      const data = await response.json();
+      setSuppliers(data.suppliers || data);
+    } catch (err) {
+      setError("Error fetching suppliers");
+    }
+  };
+
+  if (status === "loading") return <div className="p-6">Loading...</div>;
+  if (!session || !["ADMIN", "STAFF"].includes(session.user.role))
+    redirect("/login");
+
+  const isAdmin = session.user.role === "ADMIN";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
