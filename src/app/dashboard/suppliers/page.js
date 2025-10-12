@@ -36,7 +36,7 @@ export default function SuppliersPage() {
       fetchSuppliers(1, "");
       fetchStats();
     }
-  }, [status]);
+  }, [status, fetchSuppliers, fetchStats]);
 
   if (status === "loading") {
     return (

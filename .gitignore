@@ -13,3 +13,4 @@ node_modules
 .next
 .vercel
 .vscode
+ESLINT_FIXES_SUMMARY.md

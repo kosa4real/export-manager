@@ -32,7 +32,7 @@ export default function ExportsPage() {
     if (status === "authenticated") {
       fetchExports(1, "");
     }
-  }, [status]);
+  }, [status, fetchExports]);
 
   if (status === "loading") {
     return (
