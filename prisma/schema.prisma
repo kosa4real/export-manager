@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,38 +8,171 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Supplier {
-  id        Int      @id @default(autoincrement())
-  name      String
-  contact   String?
-  createdAt DateTime @default(now())
-  supplies  Supply[]
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique @db.VarChar(50)
+  email        String        @unique @db.VarChar(100)
+  passwordHash String        @db.VarChar(255)
+  role         UserRole      @default(STAFF)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  investor     Investor?     @relation("InvestorUser", fields: [investorId], references: [id])
+  investorId   Int?          @unique
+  dataRequests DataRequest[] @relation("CreatedBy")
+
+  @@map("users")
 }
 
-model Supply {
-  id           Int       @id @default(autoincrement())
-  supplier     Supplier  @relation(fields: [supplierId], references: [id])
-  supplierId   Int
-  supplyDate   DateTime
-  quantity     Int
-  amountPaid   Float
-  gradeCleanA  Int
-  gradeCleanB  Int
-  rejected     Int
-  dust         Int
-  wood         Int
-  createdAt    DateTime @default(now())
+enum UserRole {
+  ADMIN
+  STAFF
+  INVESTOR
+}
+
+model CoalSupplier {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique @db.VarChar(100)
+  contactInfo String?        @db.VarChar(100)
+  email       String?        @db.VarChar(100)
+  fullAddress String?        @db.Text
+  status      SupplierStatus @default(ACTIVE)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  supplies    CoalSupply[]
+
+  @@map("suppliers")
+}
+
+model CoalSupply {
+  id            Int            @id @default(autoincrement())
+  supplier      CoalSupplier   @relation(fields: [supplierId], references: [id])
+  supplierId    Int
+  supplyDate    DateTime
+  quantityBags  Int
+  unitPrice     Decimal        @db.Decimal(12, 2)
+  amountPaid    Decimal        @db.Decimal(12, 2)
+  paymentStatus PaymentStatus  @default(BALANCED)
+  balanceAmount Decimal        @default(0) @db.Decimal(12, 2)
+  gradeA        Int            @default(0)
+  gradeB        Int            @default(0)
+  rejectedBags  Int            @default(0)
+  dustBags      Int            @default(0)
+  woodBags      Int            @default(0)
+  notes         String?        @db.Text
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  exports       SupplyExport[]
+
+  @@unique([supplierId, supplyDate])
+  @@index([supplierId])
+  @@index([supplyDate])
+  @@map("supplies")
+}
+
+model ExportShipment {
+  id                 Int            @id @default(autoincrement())
+  exportDate         DateTime
+  quantityBags       Int
+  departureDate      DateTime
+  arrivalDate        DateTime?
+  destinationCountry String         @db.VarChar(100)
+  destinationCity    String         @db.VarChar(100)
+  clearingAgent      String?        @db.VarChar(100)  // ✅ Made optional
+  buyer              String?        @db.VarChar(100)  // ✅ Made optional
+  amountReceived     Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
+  clearingFee        Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
+  netProfit          Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
+  containerNumber    String?        @unique @db.VarChar(50)
+  status             ShipmentStatus @default(PENDING)
+  notes              String?        @db.Text
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  supplies           SupplyExport[]
+
+  @@index([exportDate])
+  @@index([destinationCountry])
+  @@index([departureDate])
+  @@map("exports")
 }
 
 model Investor {
-  id                  Int      @id @default(autoincrement())
-  name                String
+  id                  Int            @id @default(autoincrement())
+  name                String         @db.VarChar(100)
+  contactInfo         String?        @db.VarChar(100)
+  email               String?        @db.VarChar(100)
   investmentDate      DateTime
-  amountInvested      Float
-  bankUsed            String
-  amountReceived      Float
-  riyalRate           Float
-  sharingFormula      String
-  containerEquivalent Float
-  createdAt           DateTime @default(now())
+  amountInvested      Decimal        @db.Decimal(12, 2)
+  currency            String         @default("USD") @db.VarChar(3)
+  bankName            String         @db.VarChar(100)
+  amountReceived      Decimal        @db.Decimal(12, 2)
+  exchangeRate        Decimal        @db.Decimal(8, 4)
+  profitShare         String         @db.VarChar(50)
+  containerEquivalent Decimal?       @db.Decimal(10, 2)
+  status              InvestorStatus @default(ACTIVE)
+  isActive            Boolean        @default(true)
+  notes               String?        @db.Text
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  user                User?          @relation("InvestorUser")
+  dataRequests        DataRequest[]  @relation("InvestorDataRequests")
+
+  @@unique([name, investmentDate])
+  @@index([investmentDate])
+  @@index([status])
+  @@map("investors")
+}
+
+model SupplyExport {
+  supplyId     Int            @map("supply_id")
+  exportId     Int            @map("export_id")
+  quantityBags Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  supply       CoalSupply     @relation(fields: [supplyId], references: [id])
+  export       ExportShipment @relation(fields: [exportId], references: [id])
+
+  @@id([supplyId, exportId])
+  @@map("supply_exports")
+}
+
+model DataRequest {
+  id               Int       @id @default(autoincrement())
+  investorId       Int
+  investor         Investor  @relation("InvestorDataRequests", fields: [investorId], references: [id])
+  dataType         String    @db.VarChar(50)
+  recordIds        Int[]
+  includeSensitive Boolean   @default(false)
+  createdById      Int
+  createdBy        User      @relation("CreatedBy", fields: [createdById], references: [id])
+  createdAt        DateTime  @default(now())
+  status           String    @default("PENDING")
+  token            String?   @unique @db.VarChar(255)
+  expiresAt        DateTime?
+
+  @@map("data_requests")
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PaymentStatus {
+  BALANCED
+  OVERPAID
+  UNDERPAID
+}
+
+enum ShipmentStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum InvestorStatus {
+  ACTIVE
+  RETURNED
+  PARTIAL
 }
