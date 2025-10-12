@@ -101,7 +101,7 @@ export default function DashboardPage() {
       color: "from-amber-500/20 to-yellow-500/20",
       hover: "hover:from-amber-500/30 hover:to-yellow-500/30",
       borderColor: "border-amber-500/30",
-  
+
       links: [
         {
           href: "/dashboard/investments",
@@ -120,53 +120,39 @@ export default function DashboardPage() {
   const config = roleConfig[user.role] || roleConfig.STAFF;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-10 text-center sm:text-left">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            Welcome, <span className="text-emerald-400">{user.name}</span>
-          </h1>
-          <p className="text-slate-400 flex items-center justify-center sm:justify-start gap-2">
-            <span className="px-3 py-1 bg-slate-800 rounded-full text-sm font-medium">
-              {user.role}
-            </span>
-          </p>
+    <div className="max-w-7xl mx-auto">
+      {/* Dashboard Content */}
+      <div className="space-y-8">
+        <div>
+          <h2 className="text-2xl font-bold mb-2 text-white">{config.title}</h2>
+          <p className="text-slate-400">{config.description}</p>
         </div>
 
-        {/* Dashboard Content */}
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">{config.title}</h2>
-            <p className="text-slate-400">{config.description}</p>
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {config.links.map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className={`
-                  group relative p-6 rounded-2xl border ${config.borderColor}
-                  bg-gradient-to-br ${config.color}
-                  backdrop-blur-sm transition-all duration-300
-                  hover:shadow-xl hover:shadow-emerald-500/10
-                  ${config.hover}
-                `}
-              >
-                <div className="flex flex-col h-full">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-emerald-300 transition-colors">
-                    {link.title}
-                  </h3>
-                  <p className="text-slate-300 text-sm leading-relaxed flex-grow">
-                    {link.desc}
-                  </p>
-                  <span className="mt-4 inline-block w-8 h-0.5 bg-emerald-400 rounded-full group-hover:w-12 transition-all"></span>
-                </div>
-              </Link>
-            ))}
-          </div>
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {config.links.map((link, index) => (
+            <Link
+              key={index}
+              href={link.href}
+              className={`
+                group relative p-6 rounded-2xl border ${config.borderColor}
+                bg-gradient-to-br ${config.color}
+                backdrop-blur-sm transition-all duration-300
+                hover:shadow-xl hover:shadow-emerald-500/10
+                ${config.hover}
+              `}
+            >
+              <div className="flex flex-col h-full">
+                <h3 className="text-xl font-bold mb-2 group-hover:text-emerald-300 transition-colors text-white">
+                  {link.title}
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed flex-grow">
+                  {link.desc}
+                </p>
+                <span className="mt-4 inline-block w-8 h-0.5 bg-emerald-400 rounded-full group-hover:w-12 transition-all"></span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

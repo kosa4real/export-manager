@@ -77,11 +77,11 @@ model ExportShipment {
   arrivalDate        DateTime?
   destinationCountry String         @db.VarChar(100)
   destinationCity    String         @db.VarChar(100)
-  clearingAgent      String         @db.VarChar(100)
-  buyer              String         @db.VarChar(100)
-  amountReceived     Decimal        @db.Decimal(12, 2)
-  clearingFee        Decimal        @db.Decimal(12, 2)
-  netProfit          Decimal        @db.Decimal(12, 2)
+  clearingAgent      String?        @db.VarChar(100)  // ✅ Made optional
+  buyer              String?        @db.VarChar(100)  // ✅ Made optional
+  amountReceived     Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
+  clearingFee        Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
+  netProfit          Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
   containerNumber    String?        @unique @db.VarChar(50)
   status             ShipmentStatus @default(PENDING)
   notes              String?        @db.Text
@@ -166,7 +166,7 @@ enum PaymentStatus {
 
 enum ShipmentStatus {
   PENDING
-  SHIPPED
+  IN_TRANSIT
   DELIVERED
   CANCELLED
 }
