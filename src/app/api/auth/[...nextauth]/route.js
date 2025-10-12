@@ -1,10 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import { prisma } from "@/lib/prisma"; // ✅ your singleton client
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
-export const authOptions = {
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -34,7 +33,7 @@ export const authOptions = {
         }
 
         return {
-          id: user.id.toString(), // must be string
+          id: user.id.toString(),
           email: user.email,
           name: user.username,
           role: user.role,
