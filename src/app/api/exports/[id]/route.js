@@ -13,9 +13,15 @@ export async function GET(request, { params }) {
   const { id } = params;
   const isAdmin = session.user.role === "ADMIN";
 
+  // Validate ID
+  const exportId = parseInt(id);
+  if (isNaN(exportId) || exportId <= 0) {
+    return NextResponse.json({ error: "Invalid export ID" }, { status: 400 });
+  }
+
   try {
     const exportShipment = await prisma.exportShipment.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: exportId },
       select: {
         id: true,
         exportDate: true,
@@ -36,33 +42,12 @@ export async function GET(request, { params }) {
           clearingFee: true,
           netProfit: true,
         }),
-        supplies: {
-          select: {
-            id: true,
-            supply: {
-              select: {
-                id: true,
-                supplier: {
-                  select: {
-                    name: true,
-                  },
-                },
-                deliveryDate: true,
-                gradeA: true,
-                gradeB: true,
-                rejectedBags: true,
-                dustBags: true,
-                woodBags: true,
-              },
-            },
-          },
-        },
       },
     });
 
     if (!exportShipment) {
       return NextResponse.json(
-        { error: "Export shipment not found" },
+        { error: `Export shipment with ID ${exportId} not found` },
         { status: 404 }
       );
     }
@@ -71,7 +56,7 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error("Error fetching export:", error);
     return NextResponse.json(
-      { error: "Failed to fetch export" },
+      { error: "Failed to fetch export", details: error.message },
       { status: 500 }
     );
   }
