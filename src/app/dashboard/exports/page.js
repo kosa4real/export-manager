@@ -211,17 +211,17 @@ export default function ExportsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <MetricCard
                 title="Total Revenue"
-                value={`$${(stats.totalAmountReceived ?? 0).toFixed(2)}`}
+                value={`₦${(stats.totalAmountReceived ?? 0).toLocaleString()}`}
                 colorClass="text-green-400"
               />
               <MetricCard
                 title="Clearing Fees"
-                value={`$${(stats.totalClearingFee ?? 0).toFixed(2)}`}
+                value={`₦${(stats.totalClearingFee ?? 0).toLocaleString()}`}
                 colorClass="text-amber-400"
               />
               <MetricCard
                 title="Net Profit"
-                value={`$${(stats.totalNetProfit ?? 0).toFixed(2)}`}
+                value={`₦${(stats.totalNetProfit ?? 0).toLocaleString()}`}
                 colorClass="text-emerald-400"
               />
             </div>

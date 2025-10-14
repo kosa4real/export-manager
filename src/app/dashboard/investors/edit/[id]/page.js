@@ -21,7 +21,7 @@ export default function EditInvestorPage({ params }) {
     amountInvested: "",
     currency: "USD",
     bankName: "",
-    amountReceived: "",
+
     exchangeRate: "",
     profitShare: "",
     containerEquivalent: "",
@@ -62,7 +62,7 @@ export default function EditInvestorPage({ params }) {
         amountInvested: investorData.amountInvested?.toString() || "",
         currency: investorData.currency || "USD",
         bankName: investorData.bankName || "",
-        amountReceived: investorData.amountReceived?.toString() || "",
+
         exchangeRate: investorData.exchangeRate?.toString() || "",
         profitShare: investorData.profitShare || "",
         containerEquivalent: investorData.containerEquivalent?.toString() || "",
@@ -144,7 +144,7 @@ export default function EditInvestorPage({ params }) {
           amountInvested: parseFloat(formData.amountInvested),
           currency: formData.currency,
           bankName: formData.bankName,
-          amountReceived: parseFloat(formData.amountReceived) || 0,
+
           exchangeRate: parseFloat(formData.exchangeRate) || 1,
           profitShare: formData.profitShare,
           containerEquivalent: formData.containerEquivalent
@@ -363,23 +363,10 @@ export default function EditInvestorPage({ params }) {
                     required
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Amount Received
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.amountReceived}
-                    onChange={(e) =>
-                      handleChange("amountReceived", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Exchange Rate
+                    Current Exchange Rate in SAR
                   </label>
                   <input
                     type="number"

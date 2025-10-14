@@ -4,18 +4,27 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  TrendingUp,
+  Users,
+  DollarSign,
+  Activity,
+  Container,
+  Clock,
+  Eye,
+} from "lucide-react";
+import StatsCard from "@/components/StatsCard";
+import DetailModal from "@/components/DetailModal";
+import InvestorDetailContent from "@/components/InvestorDetailContent";
 
 export default function InvestorsPage() {
   const { data: session, status } = useSession();
   const [investors, setInvestors] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [selectedInvestor, setSelectedInvestor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-  });
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -26,6 +35,7 @@ export default function InvestorsPage() {
   useEffect(() => {
     if (status === "authenticated") {
       fetchInvestors();
+      fetchStats();
     }
   }, [status]);
 
@@ -37,17 +47,25 @@ export default function InvestorsPage() {
       const data = await response.json();
 
       setInvestors(data.investors || []);
-      setPagination({
-        page: data.page || 1,
-        limit: data.limit || 10,
-        total: data.total || 0,
-        totalPages: data.totalPages || 0,
-      });
     } catch (err) {
       setError("Error fetching investors");
       console.error("Error:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const response = await fetch("/api/investors/stats");
+      if (!response.ok) throw new Error("Failed to fetch stats");
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+    } finally {
+      setStatsLoading(false);
     }
   };
 
@@ -84,6 +102,163 @@ export default function InvestorsPage() {
   const isAdmin = session.user.role === "ADMIN";
   const isInvestor = session.user.role === "INVESTOR";
   const canEdit = isAdmin;
+
+  const formatCurrency = (amount, currency = "NGN") => {
+    if (!amount) return "₦0";
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatNumber = (num) => {
+    if (!num) return "0";
+    return new Intl.NumberFormat("en-US").format(num);
+  };
+
+  const renderStatsCards = () => {
+    if (statsLoading) {
+      return (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-3"
+            >
+              <div className="animate-pulse">
+                <div className="w-4 h-4 bg-slate-700 rounded-lg mb-2"></div>
+                <div className="h-3 bg-slate-700 rounded mb-1"></div>
+                <div className="h-4 bg-slate-700 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (!stats) return null;
+
+    // For investor users, show personal stats
+    if (isInvestor && stats.personalInvestment) {
+      const personal = stats.personalInvestment;
+      return (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <StatsCard
+            title="Investment"
+            value={formatCurrency(personal.amountInvested)}
+            icon={<DollarSign className="w-4 h-4" />}
+            color="emerald"
+            subtitle="Amount"
+            className="p-3"
+          />
+          <StatsCard
+            title="Status"
+            value={personal.status}
+            icon={<Activity className="w-4 h-4" />}
+            color={
+              personal.status === "ACTIVE"
+                ? "green"
+                : personal.status === "RETURNED"
+                ? "blue"
+                : "amber"
+            }
+            subtitle="Current"
+            className="p-3"
+          />
+          <StatsCard
+            title="Days"
+            value={personal.daysSinceInvestment}
+            icon={<Clock className="w-4 h-4" />}
+            color="purple"
+            subtitle="Invested"
+            className="p-3"
+          />
+        </div>
+      );
+    }
+
+    // For admin/staff users, show comprehensive stats
+    return (
+      <div className="mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <StatsCard
+            title="Investors"
+            value={formatNumber(stats.totalInvestors)}
+            icon={<Users className="w-4 h-4" />}
+            color="emerald"
+            subtitle={`${stats.activeInvestors} Active`}
+            trend={
+              stats.newInvestorsLast30Days > 0
+                ? {
+                    value: `+${stats.newInvestorsLast30Days}`,
+                    label: "new",
+                    positive: true,
+                  }
+                : null
+            }
+            className="p-3"
+          />
+          <StatsCard
+            title="Active"
+            value={formatNumber(stats.activeInvestors)}
+            icon={<Activity className="w-4 h-4" />}
+            color="blue"
+            subtitle="Investments"
+            percentage={
+              stats.totalInvestors > 0
+                ? `${(
+                    (stats.activeInvestors / stats.totalInvestors) *
+                    100
+                  ).toFixed(0)}%`
+                : "0%"
+            }
+            className="p-3"
+          />
+          {isAdmin && (
+            <StatsCard
+              title="Total Invested"
+              value={formatCurrency(stats.totalAmountInvested)}
+              icon={<DollarSign className="w-4 h-4" />}
+              color="green"
+              subtitle="Naira"
+              trend={
+                stats.recentInvestmentAmount > 0
+                  ? {
+                      value: formatCurrency(stats.recentInvestmentAmount),
+                      label: "recent",
+                      positive: true,
+                    }
+                  : null
+              }
+              className="p-3"
+            />
+          )}
+          {isAdmin && (
+            <StatsCard
+              title="Average"
+              value={formatCurrency(stats.averageInvestment)}
+              icon={<TrendingUp className="w-4 h-4" />}
+              color="amber"
+              subtitle="Per Investor"
+              className="p-3"
+            />
+          )}
+          {isAdmin && (
+            <StatsCard
+              title="Containers"
+              value={formatNumber(stats.totalContainerEquivalent)}
+              icon={<Container className="w-4 h-4" />}
+              color="cyan"
+              subtitle="Equivalent"
+              className="p-3"
+            />
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
@@ -129,6 +304,9 @@ export default function InvestorsPage() {
             <span>{error}</span>
           </div>
         )}
+
+        {/* Stats Cards */}
+        {renderStatsCards()}
 
         {/* Investors Table */}
         <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
@@ -178,24 +356,18 @@ export default function InvestorsPage() {
                     </th>
                     {isAdmin && (
                       <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
-                        Amount Invested
+                        Amount Invested (₦)
                       </th>
                     )}
-                    {isAdmin && (
-                      <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
-                        Amount Received
-                      </th>
-                    )}
+
                     {isAdmin && (
                       <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
                         Profit Share
                       </th>
                     )}
-                    {canEdit && (
-                      <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
-                        Actions
-                      </th>
-                    )}
+                    <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
@@ -229,44 +401,43 @@ export default function InvestorsPage() {
                       {isAdmin && (
                         <td className="p-4 text-green-400">
                           {investor.amountInvested
-                            ? `$${Number(
-                                investor.amountInvested
-                              ).toLocaleString()}`
+                            ? formatCurrency(investor.amountInvested)
                             : "-"}
                         </td>
                       )}
-                      {isAdmin && (
-                        <td className="p-4 text-emerald-400">
-                          {investor.amountReceived
-                            ? `$${Number(
-                                investor.amountReceived
-                              ).toLocaleString()}`
-                            : "-"}
-                        </td>
-                      )}
+
                       {isAdmin && (
                         <td className="p-4 text-cyan-400">
                           {investor.profitShare || "-"}
                         </td>
                       )}
-                      {canEdit && (
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            <Link
-                              href={`/dashboard/investors/edit/${investor.id}`}
-                              className="text-emerald-400 hover:text-emerald-300 font-medium text-sm transition-colors duration-150"
-                            >
-                              Edit
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(investor.id)}
-                              className="text-red-400 hover:text-red-300 font-medium text-sm transition-colors duration-150"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      )}
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => setSelectedInvestor(investor)}
+                            className="text-blue-400 hover:text-blue-300 font-medium text-sm transition-colors duration-150 flex items-center gap-1"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </button>
+                          {canEdit && (
+                            <>
+                              <Link
+                                href={`/dashboard/investors/edit/${investor.id}`}
+                                className="text-emerald-400 hover:text-emerald-300 font-medium text-sm transition-colors duration-150"
+                              >
+                                Edit
+                              </Link>
+                              <button
+                                onClick={() => handleDelete(investor.id)}
+                                className="text-red-400 hover:text-red-300 font-medium text-sm transition-colors duration-150"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -274,6 +445,25 @@ export default function InvestorsPage() {
             </div>
           )}
         </div>
+
+        {/* Investor Detail Modal */}
+        <DetailModal
+          isOpen={!!selectedInvestor}
+          onClose={() => setSelectedInvestor(null)}
+          title={selectedInvestor?.name || "Investor Details"}
+          subtitle={`Investment ID: #${selectedInvestor?.id}`}
+          editLink={
+            canEdit ? `/dashboard/investors/edit/${selectedInvestor?.id}` : null
+          }
+          canEdit={canEdit}
+        >
+          {selectedInvestor && (
+            <InvestorDetailContent
+              investorData={selectedInvestor}
+              isAdmin={isAdmin}
+            />
+          )}
+        </DetailModal>
       </div>
     </div>
   );
