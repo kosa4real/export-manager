@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import DashboardOverview from "@/components/DashboardOverview";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -127,6 +128,9 @@ export default function DashboardPage() {
           <h2 className="text-2xl font-bold mb-2 text-white">{config.title}</h2>
           <p className="text-slate-400">{config.description}</p>
         </div>
+
+        {/* Dashboard Overview Stats */}
+        <DashboardOverview />
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

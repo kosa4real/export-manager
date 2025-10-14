@@ -2,28 +2,30 @@
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function NewExportPage() {
+export default function NewInvestorPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
-    exportDate: "",
-    quantityBags: "",
-    departureDate: "",
-    arrivalDate: "",
-    destinationCountry: "",
-    destinationCity: "",
-    clearingAgent: "",
-    buyer: "",
-    containerNumber: "",
-    status: "PENDING",
-    amountReceived: "",
-    clearingFee: "",
-    netProfit: "",
+    name: "",
+    contactInfo: "",
+    email: "",
+    investmentDate: "",
+    amountInvested: "",
+    currency: "USD",
+    bankName: "",
+
+    exchangeRate: "1",
+    profitShare: "",
+    containerEquivalent: "",
+    status: "ACTIVE",
+    isActive: true,
     notes: "",
+    userId: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,9 +36,26 @@ export default function NewExportPage() {
     }
   }, [status]);
 
+  useEffect(() => {
+    if (status === "authenticated" && session.user.role === "ADMIN") {
+      fetchUsers();
+    }
+  }, [status, session]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/users?page=1&limit=100");
+      if (!response.ok) throw new Error("Failed to fetch users");
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    }
+  };
+
   if (status === "loading") {
     return (
-      <div className="flex justify-center items-center h-screen bg-slate-950 text-white">
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-slate-400">Loading...</p>
@@ -45,52 +64,48 @@ export default function NewExportPage() {
     );
   }
 
-  if (!session || !["ADMIN", "STAFF"].includes(session.user.role)) {
+  if (!session || session.user.role !== "ADMIN") {
     redirect("/login");
   }
 
-  const isAdmin = session.user.role === "ADMIN";
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const payload = {
-        exportDate: formData.exportDate,
-        quantityBags: parseInt(formData.quantityBags),
-        departureDate: formData.departureDate,
-        arrivalDate: formData.arrivalDate || null,
-        destinationCountry: formData.destinationCountry,
-        destinationCity: formData.destinationCity,
-        clearingAgent: formData.clearingAgent,
-        buyer: formData.buyer,
-        containerNumber: formData.containerNumber || null,
-        status: formData.status,
-        notes: formData.notes || null,
-      };
-
-      if (isAdmin) {
-        payload.amountReceived = parseFloat(formData.amountReceived) || 0;
-        payload.clearingFee = parseFloat(formData.clearingFee) || 0;
-        payload.netProfit = parseFloat(formData.netProfit) || 0;
-      }
-
-      const response = await fetch("/api/exports", {
+      const response = await fetch("/api/investors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          name: formData.name,
+          contactInfo: formData.contactInfo,
+          email: formData.email,
+          investmentDate: formData.investmentDate,
+          amountInvested: parseFloat(formData.amountInvested),
+          currency: formData.currency,
+          bankName: formData.bankName,
+
+          exchangeRate: parseFloat(formData.exchangeRate) || 1,
+          profitShare: formData.profitShare,
+          containerEquivalent: formData.containerEquivalent
+            ? parseFloat(formData.containerEquivalent)
+            : null,
+          status: formData.status,
+          isActive: formData.isActive,
+          notes: formData.notes,
+          userId: formData.userId ? parseInt(formData.userId) : null,
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create export");
+        throw new Error(errorData.error || "Failed to create investor");
       }
 
-      router.push("/dashboard/exports");
+      router.push("/dashboard/investors");
     } catch (err) {
-      setError(err.message || "Error creating export");
+      setError(err.message || "Error creating investor");
     } finally {
       setLoading(false);
     }
@@ -107,7 +122,7 @@ export default function NewExportPage() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
             <Link
-              href="/dashboard/exports"
+              href="/dashboard/investors"
               className="text-slate-400 hover:text-white transition-colors"
             >
               <svg
@@ -126,10 +141,10 @@ export default function NewExportPage() {
             </Link>
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-                Add New Export
+                Add New Investor
               </h1>
               <p className="text-slate-400 text-sm">
-                Create a new export shipment record
+                Create a new investor account
               </p>
             </div>
           </div>
@@ -156,225 +171,211 @@ export default function NewExportPage() {
         {/* Form */}
         <form onSubmit={handleSubmit}>
           <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6 space-y-6">
-            {/* Export Information */}
+            {/* Basic Information */}
             <div>
               <h2 className="text-xl font-semibold text-white mb-4">
-                Export Information
+                Basic Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Export Date <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.exportDate}
-                    onChange={(e) => handleChange("exportDate", e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Quantity (Bags) <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.quantityBags}
-                    onChange={(e) =>
-                      handleChange("quantityBags", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    min="1"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Departure Date <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.departureDate}
-                    onChange={(e) =>
-                      handleChange("departureDate", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Arrival Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.arrivalDate}
-                    onChange={(e) =>
-                      handleChange("arrivalDate", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Container Number
+                    Name <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
-                    value={formData.containerNumber}
-                    onChange={(e) =>
-                      handleChange("containerNumber", e.target.value)
-                    }
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
                     className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    placeholder="e.g., ABCD1234567"
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Status <span className="text-red-400">*</span>
+                    Contact Info
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.contactInfo}
+                    onChange={(e) =>
+                      handleChange("contactInfo", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Investment Date <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.investmentDate}
+                    onChange={(e) =>
+                      handleChange("investmentDate", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Financial Information */}
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Financial Information
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Amount Invested <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.amountInvested}
+                    onChange={(e) =>
+                      handleChange("amountInvested", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Currency <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.currency}
+                    onChange={(e) => handleChange("currency", e.target.value)}
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Bank Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.bankName}
+                    onChange={(e) => handleChange("bankName", e.target.value)}
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Current Exchange Rate in SAR
+                  </label>
+                  <input
+                    type="number"
+                    step="0.0001"
+                    value={formData.exchangeRate}
+                    onChange={(e) =>
+                      handleChange("exchangeRate", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Profit Share <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.profitShare}
+                    onChange={(e) =>
+                      handleChange("profitShare", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                    placeholder="e.g., 10%, 50/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Container Equivalent
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.containerEquivalent}
+                    onChange={(e) =>
+                      handleChange("containerEquivalent", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Status & User Link */}
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Status & Settings
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Status
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => handleChange("status", e.target.value)}
                     className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    required
                   >
-                    <option value="PENDING">Pending</option>
-                    <option value="IN_TRANSIT">In Transit</option>
-                    <option value="DELIVERED">Delivered</option>
-                    <option value="CANCELLED">Cancelled</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="RETURNED">Returned</option>
+                    <option value="PARTIAL">Partial</option>
                   </select>
                 </div>
-              </div>
-            </div>
-
-            {/* Destination & Partners */}
-            <div>
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Destination & Partners
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Destination Country <span className="text-red-400">*</span>
+                    Linked User
                   </label>
-                  <input
-                    type="text"
-                    value={formData.destinationCountry}
-                    onChange={(e) =>
-                      handleChange("destinationCountry", e.target.value)
-                    }
+                  <select
+                    value={formData.userId}
+                    onChange={(e) => handleChange("userId", e.target.value)}
                     className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    placeholder="e.g., United States"
-                    required
-                  />
+                  >
+                    <option value="">None</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.username}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Destination City <span className="text-red-400">*</span>
-                  </label>
+                <div className="flex items-center">
                   <input
-                    type="text"
-                    value={formData.destinationCity}
-                    onChange={(e) =>
-                      handleChange("destinationCity", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    placeholder="e.g., New York"
-                    required
+                    type="checkbox"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={(e) => handleChange("isActive", e.target.checked)}
+                    className="w-4 h-4 text-emerald-600 bg-slate-800 border-slate-700 rounded focus:ring-emerald-500 focus:ring-2"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Clearing Agent <span className="text-red-400">*</span>
+                  <label
+                    htmlFor="isActive"
+                    className="ml-2 text-sm font-medium text-slate-300"
+                  >
+                    Is Active
                   </label>
-                  <input
-                    type="text"
-                    value={formData.clearingAgent}
-                    onChange={(e) =>
-                      handleChange("clearingAgent", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    placeholder="Agent name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Buyer <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.buyer}
-                    onChange={(e) => handleChange("buyer", e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    placeholder="Buyer name"
-                    required
-                  />
                 </div>
               </div>
             </div>
-
-            {/* Financial Information (Admin Only) */}
-            {isAdmin && (
-              <div>
-                <h2 className="text-xl font-semibold text-white mb-4">
-                  Financial Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Amount Received ($){" "}
-                      <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.amountReceived}
-                      onChange={(e) =>
-                        handleChange("amountReceived", e.target.value)
-                      }
-                      className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                      placeholder="0.00"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Clearing Fee ($) <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.clearingFee}
-                      onChange={(e) =>
-                        handleChange("clearingFee", e.target.value)
-                      }
-                      className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                      placeholder="0.00"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Net Profit ($) <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.netProfit}
-                      onChange={(e) =>
-                        handleChange("netProfit", e.target.value)
-                      }
-                      className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                      placeholder="0.00"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Notes */}
             <div>
@@ -386,7 +387,7 @@ export default function NewExportPage() {
                 onChange={(e) => handleChange("notes", e.target.value)}
                 rows={4}
                 className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all resize-none"
-                placeholder="Additional notes or comments..."
+                placeholder="Additional notes about this investor..."
               />
             </div>
 
@@ -403,11 +404,11 @@ export default function NewExportPage() {
                     Creating...
                   </span>
                 ) : (
-                  "Create Export"
+                  "Create Investor"
                 )}
               </button>
               <Link
-                href="/dashboard/exports"
+                href="/dashboard/investors"
                 className="px-6 py-3 bg-slate-800 rounded-lg font-medium text-white hover:bg-slate-700 transition-all duration-300 text-center"
               >
                 Cancel
