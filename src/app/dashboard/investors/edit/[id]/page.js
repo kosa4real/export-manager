@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 
 export default function EditInvestorPage({ params }) {
@@ -42,9 +42,9 @@ export default function EditInvestorPage({ params }) {
       fetchInvestor();
       fetchUsers();
     }
-  }, [status, id]);
+  }, [status, id, fetchInvestor]);
 
-  const fetchInvestor = async () => {
+  const fetchInvestor = useCallback(async () => {
     try {
       const res = await fetch(`/api/investors/${id}`);
       if (!res.ok) {
@@ -76,7 +76,7 @@ export default function EditInvestorPage({ params }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const fetchUsers = async () => {
     try {
@@ -117,7 +117,7 @@ export default function EditInvestorPage({ params }) {
               />
             </svg>
             <span>
-              Access denied. You don't have permission to edit investors.
+              Access denied. You don&apos;t have permission to edit investors.
             </span>
           </div>
         </div>

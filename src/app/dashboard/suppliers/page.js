@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 
 export default function SuppliersPage() {
@@ -25,6 +25,47 @@ export default function SuppliersPage() {
   });
   const [filterStatus, setFilterStatus] = useState("");
 
+  const fetchStats = async () => {
+    try {
+      const res = await fetch("/api/suppliers/stats");
+      if (!res.ok) throw new Error("Failed to load stats");
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      console.warn("Could not load stats:", err.message);
+    }
+  };
+
+  const fetchSuppliers = useCallback(
+    async (page = 1, statusFilter = "") => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page);
+        params.append("limit", pagination.limit);
+        if (statusFilter) params.append("status", statusFilter);
+
+        const res = await fetch(`/api/suppliers?${params}`);
+        if (!res.ok) throw new Error("Failed to load suppliers");
+        const data = await res.json();
+
+        setSuppliers(data.suppliers || []);
+        setPagination({
+          page: data.page || page,
+          limit: data.limit || 10,
+          total: data.total || 0,
+          totalPages: Math.ceil((data.total || 0) / (data.limit || 10)),
+        });
+      } catch (err) {
+        setError(err.message || "Unable to load suppliers");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pagination.limit]
+  );
+
   useEffect(() => {
     if (status === "unauthenticated") {
       redirect("/login");
@@ -36,7 +77,7 @@ export default function SuppliersPage() {
       fetchSuppliers(1, "");
       fetchStats();
     }
-  }, [status]);
+  }, [status, fetchSuppliers]);
 
   if (status === "loading") {
     return (
@@ -53,44 +94,6 @@ export default function SuppliersPage() {
 
   const canEdit = ["ADMIN", "STAFF"].includes(session.user.role);
   const canDelete = session.user.role === "ADMIN";
-
-  const fetchStats = async () => {
-    try {
-      const res = await fetch("/api/suppliers/stats");
-      if (!res.ok) throw new Error("Failed to load stats");
-      const data = await res.json();
-      setStats(data);
-    } catch (err) {
-      console.warn("Could not load stats:", err.message);
-    }
-  };
-
-  const fetchSuppliers = async (page = 1, statusFilter = "") => {
-    setLoading(true);
-    setError("");
-    try {
-      const params = new URLSearchParams();
-      params.append("page", page);
-      params.append("limit", pagination.limit);
-      if (statusFilter) params.append("status", statusFilter);
-
-      const res = await fetch(`/api/suppliers?${params}`);
-      if (!res.ok) throw new Error("Failed to load suppliers");
-      const data = await res.json();
-
-      setSuppliers(data.suppliers || []);
-      setPagination({
-        page: data.page || page,
-        limit: data.limit || 10,
-        total: data.total || 0,
-        totalPages: Math.ceil((data.total || 0) / (data.limit || 10)),
-      });
-    } catch (err) {
-      setError(err.message || "Unable to load suppliers");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const goToPage = (page) => {
     if (page >= 1 && page <= pagination.totalPages) {

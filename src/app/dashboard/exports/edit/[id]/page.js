@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export default function EditExportPage({ params }) {
   const { data: session, status } = useSession();
@@ -38,9 +38,9 @@ export default function EditExportPage({ params }) {
     if (status === "authenticated" && id) {
       fetchExport();
     }
-  }, [status, id]);
+  }, [status, id, fetchExport]);
 
-  const fetchExport = async () => {
+  const fetchExport = useCallback(async () => {
     try {
       const res = await fetch(`/api/exports/${id}`);
 
@@ -79,7 +79,7 @@ export default function EditExportPage({ params }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   if (status === "loading" || loading) {
     return (

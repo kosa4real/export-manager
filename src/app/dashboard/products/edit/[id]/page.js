@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export default function EditSupplyPage({ params }) {
   const { data: session, status } = useSession();
@@ -33,7 +33,7 @@ export default function EditSupplyPage({ params }) {
       fetchSuppliers();
       fetchSupply();
     }
-  }, [status]);
+  }, [status, fetchSupply]);
 
   // Auto-calculate balance for admin
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function EditSupplyPage({ params }) {
     }
   };
 
-  const fetchSupply = async () => {
+  const fetchSupply = useCallback(async () => {
     try {
       const response = await fetch(`/api/supplies/${supplyId}`);
       if (!response.ok) throw new Error("Failed to fetch supply");
@@ -106,7 +106,7 @@ export default function EditSupplyPage({ params }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supplyId]);
 
   if (status === "loading") return <div className="p-6">Loading...</div>;
   if (!session || !["ADMIN", "STAFF"].includes(session.user.role))

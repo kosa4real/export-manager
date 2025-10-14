@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import DetailModal from "@/components/DetailModal";
 import SupplyDetailContent from "@/components/SupplyDetailContent";
@@ -74,20 +74,6 @@ export default function SuppliesPage() {
   const [filterSupplier, setFilterSupplier] = useState("");
   const [selectedSupply, setSelectedSupply] = useState(null);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      redirect("/login");
-    }
-  }, [status]);
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchSupplies(1, "");
-      fetchStats();
-      fetchSuppliers();
-    }
-  }, [status]);
-
   const fetchStats = async () => {
     try {
       const res = await fetch("/api/supplies/stats");
@@ -110,32 +96,49 @@ export default function SuppliesPage() {
     }
   };
 
-  const fetchSupplies = async (page = 1, supplierFilter = "") => {
-    setLoading(true);
-    setError("");
-    try {
-      const params = new URLSearchParams();
-      params.append("page", page);
-      params.append("limit", pagination.limit);
-      if (supplierFilter) params.append("supplierId", supplierFilter);
+  const fetchSupplies = useCallback(
+    async (page = 1, supplierFilter = "") => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page);
+        params.append("limit", pagination.limit);
+        if (supplierFilter) params.append("supplierId", supplierFilter);
 
-      const res = await fetch(`/api/supplies?${params}`);
-      if (!res.ok) throw new Error("Failed to load supplies");
-      const data = await res.json();
+        const res = await fetch(`/api/supplies?${params}`);
+        if (!res.ok) throw new Error("Failed to load supplies");
+        const data = await res.json();
 
-      setSupplies(data.supplies || []);
-      setPagination({
-        page: data.page || page,
-        limit: data.limit || 10,
-        total: data.total || 0,
-        totalPages: Math.ceil((data.total || 0) / (data.limit || 10)),
-      });
-    } catch (err) {
-      setError(err.message || "Unable to load supplies");
-    } finally {
-      setLoading(false);
+        setSupplies(data.supplies || []);
+        setPagination({
+          page: data.page || page,
+          limit: data.limit || 10,
+          total: data.total || 0,
+          totalPages: Math.ceil((data.total || 0) / (data.limit || 10)),
+        });
+      } catch (err) {
+        setError(err.message || "Unable to load supplies");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pagination.limit]
+  );
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/login");
     }
-  };
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchSupplies(1, "");
+      fetchStats();
+      fetchSuppliers();
+    }
+  }, [status, fetchSupplies]);
 
   const goToPage = (page) => {
     if (page >= 1 && page <= pagination.totalPages) {
