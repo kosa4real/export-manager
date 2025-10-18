@@ -39,10 +39,10 @@ export default function LoginPage() {
         <div className="text-center mb-10">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center font-bold text-xl text-white">
-              DE
+              MB
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              Dan Enterprises
+              MB & A Agro Commodities
             </span>
           </div>
           <h1 className="text-3xl font-bold text-white">
@@ -132,7 +132,8 @@ export default function LoginPage() {
 
           <div className="mt-8 pt-6 border-t border-slate-800">
             <p className="text-center text-slate-400 text-sm">
-              © {new Date().getFullYear()} Dan Enterprises. All rights reserved.
+              © {new Date().getFullYear()} MB & A Agro Commodities Limited. All
+              rights reserved.
             </p>
           </div>
         </div>
