@@ -61,6 +61,11 @@ export default function DashboardPage() {
           desc: "Track export shipments.",
         },
         {
+          href: "/dashboard/supply-exports",
+          title: "Supply-Exports",
+          desc: "Manage supply to export mappings.",
+        },
+        {
           href: "/dashboard/investors",
           title: "Investors",
           desc: "Manage investor records.",
@@ -93,6 +98,11 @@ export default function DashboardPage() {
           href: "/dashboard/exports",
           title: "Exports",
           desc: "Track export shipments.",
+        },
+        {
+          href: "/dashboard/supply-exports",
+          title: "Supply-Exports",
+          desc: "Manage supply to export mappings.",
         },
       ],
     },

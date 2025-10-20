@@ -14,7 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-export default function DanEnterprisesLanding() {
+export default function MBAAgroCommoditiesLanding() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -63,6 +63,18 @@ export default function DanEnterprisesLanding() {
         "Sustainable Practices",
       ],
     },
+    {
+      icon: <Truck className="w-12 h-12" />,
+      title: "Transportation",
+      description:
+        "End-to-end logistics solutions for seamless movement of goods across Nigeria and internationally. Our fleet and partnerships ensure timely, secure, and cost-effective transportation.",
+      features: [
+        "Domestic & International Freight",
+        "Temperature-Controlled Transport",
+        "Real-Time Tracking",
+        "Customs Clearance Support",
+      ],
+    },
   ];
 
   const stats = [
@@ -89,10 +101,10 @@ export default function DanEnterprisesLanding() {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-lg flex items-center justify-center font-bold text-xl">
-                DE
+                MB
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                Dan Enterprises
+                MB & A Agro Commodities Limited
               </span>
             </div>
 
@@ -197,9 +209,10 @@ export default function DanEnterprisesLanding() {
             </h1>
 
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              Dan Enterprises is your trusted partner in coal export, real
-              estate development, and agricultural innovation. We deliver
-              excellence across three dynamic sectors.
+              MB & A Agro Commodities Limited is your trusted partner in coal
+              export, real estate development, agricultural innovation, and
+              transportation solutions. We deliver excellence across four
+              dynamic sectors.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -240,7 +253,7 @@ export default function DanEnterprisesLanding() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, idx) => (
               <div
                 key={idx}
@@ -274,13 +287,13 @@ export default function DanEnterprisesLanding() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Why Choose Dan Enterprises?
+                Why Choose MB & A Agro Commodities Limited?
               </h2>
               <p className="text-lg text-slate-300 mb-8">
                 With over 15 years of experience in international trade,
-                construction, and agriculture, {"we've"} built a reputation for
-                reliability, quality, and innovation. Our commitment to
-                excellence drives everything we do.
+                construction, agriculture, and transportation, {"we've"} built a
+                reputation for reliability, quality, and innovation. Our
+                commitment to excellence drives everything we do.
               </p>
 
               <div className="space-y-6">
@@ -354,8 +367,8 @@ export default function DanEnterprisesLanding() {
             Ready to Work Together?
           </h2>
           <p className="text-xl text-slate-300 mb-10">
-            {"Let's"} discuss how Dan Enterprises can help you achieve your business
-            goals
+            {"Let's"} discuss how MB & A Agro Commodities Limited can help you
+            achieve your business goals
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -376,13 +389,15 @@ export default function DanEnterprisesLanding() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-lg flex items-center justify-center font-bold">
-                  DE
+                  MB
                 </div>
-                <span className="text-xl font-bold">Dan Enterprises</span>
+                <span className="text-xl font-bold">
+                  MB & A Agro Commodities Limited
+                </span>
               </div>
               <p className="text-slate-400 text-sm">
-                Building bridges in trade, construction, and agriculture since
-                2010
+                Building bridges in trade, construction, agriculture, and
+                transportation since 2010
               </p>
             </div>
 
@@ -411,6 +426,14 @@ export default function DanEnterprisesLanding() {
                     className="hover:text-emerald-400 transition-colors"
                   >
                     Agri Business
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-emerald-400 transition-colors"
+                  >
+                    Transportation
                   </a>
                 </li>
               </ul>
@@ -470,7 +493,9 @@ export default function DanEnterprisesLanding() {
           </div>
 
           <div className="border-t border-slate-800 pt-8 text-center text-slate-400 text-sm">
-            <p>&copy; 2025 Dan Enterprises. All rights reserved.</p>
+            <p>
+              &copy; 2025 MB & A Agro Commodities Limited. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>

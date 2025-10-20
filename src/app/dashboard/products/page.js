@@ -7,10 +7,15 @@ import Link from "next/link";
 import DetailModal from "@/components/DetailModal";
 import SupplyDetailContent from "@/components/SupplyDetailContent";
 
-// Helper: Safely format currency
-const formatCurrency = (value) => {
-  const num = typeof value === "number" ? value : parseFloat(value);
-  return !isNaN(num) ? num.toFixed(2) : "0.00";
+// Helper: Format currency in Nigerian Naira
+const formatCurrency = (amount) => {
+  if (!amount) return "₦0";
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 };
 
 // Helper: Render grades summary for table (only non-zero)
@@ -244,7 +249,7 @@ export default function SuppliesPage() {
             {isAdmin ? (
               <MetricCard
                 title="Total Paid"
-                value={`NGN ${formatCurrency(stats.totalAmountPaid)}`}
+                value={formatCurrency(stats.totalAmountPaid)}
                 colorClass="text-green-400"
               />
             ) : (
