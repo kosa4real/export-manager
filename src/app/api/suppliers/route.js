@@ -45,8 +45,33 @@ export async function GET(request) {
 // Create a new supplier
 export async function POST(request) {
   const session = await getServerSession(authOptions);
+
+  // Debug logging
+  console.log("=== SUPPLIER CREATION DEBUG ===");
+  console.log("Session:", session);
+  console.log("User:", session?.user);
+  console.log("User Role:", session?.user?.role);
+  console.log("Role Check:", ["ADMIN", "STAFF"].includes(session?.user?.role));
+  console.log("===============================");
+
   if (!session || !["ADMIN", "STAFF"].includes(session.user.role)) {
-    return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    console.log(
+      "Access denied - Session:",
+      !!session,
+      "Role:",
+      session?.user?.role
+    );
+    return NextResponse.json(
+      {
+        error: "Access denied",
+        debug: {
+          hasSession: !!session,
+          userRole: session?.user?.role,
+          allowedRoles: ["ADMIN", "STAFF"],
+        },
+      },
+      { status: 403 }
+    );
   }
 
   try {

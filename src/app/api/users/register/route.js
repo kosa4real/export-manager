@@ -1,32 +1,43 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
 
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "ADMIN") {
-    return NextResponse.json(
-      { error: "Access denied: Admin only" },
-      { status: 403 }
-    );
-  }
-
-  const { username, email, password, role } = await request.json();
-
-  if (!["ADMIN", "STAFF", "INVESTOR"].includes(role)) {
-    return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
   try {
+    const { username, email, password, role = "STAFF" } = await request.json();
+
+    // Basic validation
+    if (!username || !email || !password) {
+      return NextResponse.json(
+        { error: "Username, email, and password are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "User with this email or username already exists" },
+        { status: 409 }
+      );
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // Create user
     const user = await prisma.user.create({
       data: {
         username,
         email,
         passwordHash,
-        role,
+        role: role.toUpperCase(),
       },
       select: {
         id: true,
@@ -34,13 +45,17 @@ export async function POST(request) {
         email: true,
         role: true,
         createdAt: true,
-        updatedAt: true,
       },
     });
-    return NextResponse.json(user, { status: 201 });
-  } catch (error) {
+
     return NextResponse.json(
-      { error: "User creation failed" },
+      { message: "User created successfully", user },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return NextResponse.json(
+      { error: "Failed to create user" },
       { status: 500 }
     );
   }
