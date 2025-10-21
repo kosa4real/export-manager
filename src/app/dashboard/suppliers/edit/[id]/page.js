@@ -2,13 +2,13 @@
 
 import { useSession } from "next-auth/react";
 import { redirect, notFound } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 
 export default function EditSupplierPage({ params }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const supplierId = params.id;
+  const supplierId = use(params).id;
 
   const [formData, setFormData] = useState({
     name: "",

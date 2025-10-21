@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import DetailModal from "@/components/DetailModal";
 import SupplyDetailContent from "@/components/SupplyDetailContent";
+import SupplyStatusIndicator from "@/components/SupplyStatusIndicator";
 
 // Helper: Format currency in Nigerian Naira
 const formatCurrency = (amount) => {
@@ -401,7 +402,10 @@ export default function SuppliesPage() {
                           {supply.quantityBags.toLocaleString()}
                         </td>
                         <td className="p-4 text-sm text-slate-300">
-                          {renderGradesSummary(supply)}
+                          <div className="space-y-2">
+                            <div>{renderGradesSummary(supply)}</div>
+                            <SupplyStatusIndicator supplyId={supply.id} />
+                          </div>
                         </td>
                         {canEdit && (
                           <td className="p-4">

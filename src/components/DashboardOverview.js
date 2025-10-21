@@ -12,6 +12,7 @@ import {
   Ship,
   Building2,
   Calendar,
+  Link,
 } from "lucide-react";
 
 const DashboardOverview = () => {
@@ -28,16 +29,25 @@ const DashboardOverview = () => {
   const fetchAllStats = async () => {
     setLoading(true);
     try {
-      const [investorStats, suppliesStats, exportsStats] = await Promise.all([
-        fetch("/api/investors/stats").then((res) => (res.ok ? res.json() : {})),
-        fetch("/api/supplies/stats").then((res) => (res.ok ? res.json() : {})),
-        fetch("/api/exports/stats").then((res) => (res.ok ? res.json() : {})),
-      ]);
+      const [investorStats, suppliesStats, exportsStats, supplyExportsStats] =
+        await Promise.all([
+          fetch("/api/investors/stats").then((res) =>
+            res.ok ? res.json() : {}
+          ),
+          fetch("/api/supplies/stats").then((res) =>
+            res.ok ? res.json() : {}
+          ),
+          fetch("/api/exports/stats").then((res) => (res.ok ? res.json() : {})),
+          fetch("/api/supply-exports/stats").then((res) =>
+            res.ok ? res.json() : {}
+          ),
+        ]);
 
       setStats({
         investors: investorStats,
         supplies: suppliesStats,
         exports: exportsStats,
+        supplyExports: supplyExportsStats,
       });
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
@@ -63,8 +73,8 @@ const DashboardOverview = () => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+        {[...Array(5)].map((_, i) => (
           <div
             key={i}
             className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-3"
@@ -118,6 +128,14 @@ const DashboardOverview = () => {
           subtitle="Invested"
           className="p-3"
         />
+        <StatsCard
+          title="Linked Exports"
+          value={formatNumber(stats.exports?.totalExports || 0)}
+          icon={<Ship className="w-4 h-4" />}
+          color="blue"
+          subtitle="Total"
+          className="p-3"
+        />
       </div>
     );
   }
@@ -125,7 +143,7 @@ const DashboardOverview = () => {
   // For admin/staff users, show comprehensive overview
   return (
     <div className="mb-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* Investors Overview */}
         <StatsCard
           title="Investors"
@@ -183,6 +201,27 @@ const DashboardOverview = () => {
           className="p-3"
         />
 
+        {/* Supply-Exports Overview */}
+        <StatsCard
+          title="Supply-Export Mappings"
+          value={formatNumber(stats.supplyExports?.totalMappings)}
+          icon={<Link className="w-4 h-4" />}
+          color="amber"
+          subtitle={`${formatNumber(
+            stats.supplyExports?.totalMappedQuantity
+          )} Bags`}
+          trend={
+            stats.supplyExports?.mappingsLast30Days > 0
+              ? {
+                  value: `+${stats.supplyExports.mappingsLast30Days}`,
+                  label: "recent",
+                  positive: true,
+                }
+              : null
+          }
+          className="p-3"
+        />
+
         {/* Financial Overview - Admin Only */}
         {isAdmin && (
           <StatsCard
@@ -196,21 +235,6 @@ const DashboardOverview = () => {
                 ? `${stats.investors.conversionEfficiency}%`
                 : null
             }
-            className="p-3"
-          />
-        )}
-
-        {/* Business Overview for non-admin */}
-        {!isAdmin && (
-          <StatsCard
-            title="Activity"
-            value={formatNumber(
-              (stats.supplies?.suppliesLast7Days || 0) +
-                (stats.exports?.exportsLast30Days || 0)
-            )}
-            icon={<Building2 className="w-4 h-4" />}
-            color="amber"
-            subtitle="Recent"
             className="p-3"
           />
         )}

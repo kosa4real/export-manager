@@ -16,17 +16,11 @@ model User {
   role         UserRole      @default(STAFF)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  investor     Investor?     @relation("InvestorUser", fields: [investorId], references: [id])
   investorId   Int?          @unique
   dataRequests DataRequest[] @relation("CreatedBy")
+  investor     Investor?     @relation("InvestorUser", fields: [investorId], references: [id])
 
   @@map("users")
-}
-
-enum UserRole {
-  ADMIN
-  STAFF
-  INVESTOR
 }
 
 model CoalSupplier {
@@ -34,7 +28,7 @@ model CoalSupplier {
   name        String         @unique @db.VarChar(100)
   contactInfo String?        @db.VarChar(100)
   email       String?        @db.VarChar(100)
-  fullAddress String?        @db.Text
+  fullAddress String?
   status      SupplierStatus @default(ACTIVE)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -45,7 +39,6 @@ model CoalSupplier {
 
 model CoalSupply {
   id            Int            @id @default(autoincrement())
-  supplier      CoalSupplier   @relation(fields: [supplierId], references: [id])
   supplierId    Int
   supplyDate    DateTime
   quantityBags  Int
@@ -58,9 +51,10 @@ model CoalSupply {
   rejectedBags  Int            @default(0)
   dustBags      Int            @default(0)
   woodBags      Int            @default(0)
-  notes         String?        @db.Text
+  notes         String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  supplier      CoalSupplier   @relation(fields: [supplierId], references: [id])
   exports       SupplyExport[]
 
   @@unique([supplierId, supplyDate])
@@ -77,14 +71,14 @@ model ExportShipment {
   arrivalDate        DateTime?
   destinationCountry String         @db.VarChar(100)
   destinationCity    String         @db.VarChar(100)
-  clearingAgent      String?        @db.VarChar(100)  // ✅ Made optional
-  buyer              String?        @db.VarChar(100)  // ✅ Made optional
-  amountReceived     Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
-  clearingFee        Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
-  netProfit          Decimal?       @db.Decimal(12, 2)  // ✅ Made optional
+  clearingAgent      String?        @db.VarChar(100)
+  buyer              String?        @db.VarChar(100)
+  amountReceived     Decimal?       @db.Decimal(12, 2)
+  clearingFee        Decimal?       @db.Decimal(12, 2)
+  netProfit          Decimal?       @db.Decimal(12, 2)
   containerNumber    String?        @unique @db.VarChar(50)
   status             ShipmentStatus @default(PENDING)
-  notes              String?        @db.Text
+  notes              String?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   supplies           SupplyExport[]
@@ -110,11 +104,11 @@ model Investor {
   containerEquivalent Decimal?       @db.Decimal(10, 2)
   status              InvestorStatus @default(ACTIVE)
   isActive            Boolean        @default(true)
-  notes               String?        @db.Text
+  notes               String?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-  user                User?          @relation("InvestorUser")
   dataRequests        DataRequest[]  @relation("InvestorDataRequests")
+  user                User?          @relation("InvestorUser")
 
   @@unique([name, investmentDate])
   @@index([investmentDate])
@@ -126,30 +120,42 @@ model SupplyExport {
   supplyId     Int            @map("supply_id")
   exportId     Int            @map("export_id")
   quantityBags Int
+  allocatedAt  DateTime       @default(now())
+  priority     Int            @default(0)
+  notes        String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  supply       CoalSupply     @relation(fields: [supplyId], references: [id])
-  export       ExportShipment @relation(fields: [exportId], references: [id])
+  export       ExportShipment @relation(fields: [exportId], references: [id], onDelete: Cascade)
+  supply       CoalSupply     @relation(fields: [supplyId], references: [id], onDelete: Cascade)
 
   @@id([supplyId, exportId])
+  @@index([allocatedAt])
+  @@index([priority])
+  @@index([quantityBags])
   @@map("supply_exports")
 }
 
 model DataRequest {
   id               Int       @id @default(autoincrement())
   investorId       Int
-  investor         Investor  @relation("InvestorDataRequests", fields: [investorId], references: [id])
   dataType         String    @db.VarChar(50)
   recordIds        Int[]
   includeSensitive Boolean   @default(false)
   createdById      Int
-  createdBy        User      @relation("CreatedBy", fields: [createdById], references: [id])
   createdAt        DateTime  @default(now())
   status           String    @default("PENDING")
   token            String?   @unique @db.VarChar(255)
   expiresAt        DateTime?
+  createdBy        User      @relation("CreatedBy", fields: [createdById], references: [id])
+  investor         Investor  @relation("InvestorDataRequests", fields: [investorId], references: [id])
 
   @@map("data_requests")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  INVESTOR
 }
 
 enum SupplierStatus {

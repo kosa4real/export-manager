@@ -2,12 +2,12 @@
 
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 
 export default function EditExportPage({ params }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { id } = params;
+  const { id } = use(params);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -27,18 +27,6 @@ export default function EditExportPage({ params }) {
     clearingFee: "",
     netProfit: "",
   });
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      redirect("/login");
-    }
-  }, [status]);
-
-  useEffect(() => {
-    if (status === "authenticated" && id) {
-      fetchExport();
-    }
-  }, [status, id, fetchExport]);
 
   const fetchExport = useCallback(async () => {
     try {
@@ -80,6 +68,18 @@ export default function EditExportPage({ params }) {
       setLoading(false);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/login");
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "authenticated" && id) {
+      fetchExport();
+    }
+  }, [status, id, fetchExport]);
 
   if (status === "loading" || loading) {
     return (

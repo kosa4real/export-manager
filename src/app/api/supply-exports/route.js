@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
+import { SupplyExportValidator } from "@/lib/supply-export-validation";
+import { SupplyAllocationEngine } from "@/lib/supply-allocation-engine";
 
 // Get all supply-export mappings
 export async function GET(request) {
@@ -67,59 +69,49 @@ export async function GET(request) {
   }
 }
 
-// Create a new supply-export mapping
+// Create a new supply-export mapping with enhanced validation
 export async function POST(request) {
   const session = await getServerSession(authOptions);
   if (!session || !["ADMIN", "STAFF"].includes(session.user.role)) {
     return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
-  const data = await request.json();
-  const { supplyId, exportId, quantityBags } = data;
-
   try {
-    // Validate supply and export exist
-    const [supply, exportShipment] = await Promise.all([
-      prisma.coalSupply.findUnique({ where: { id: parseInt(supplyId) } }),
-      prisma.exportShipment.findUnique({ where: { id: parseInt(exportId) } }),
-    ]);
+    const data = await request.json();
+    const { supplyId, exportId, quantityBags, notes, priority } = data;
 
-    if (!supply || !exportShipment) {
+    // Validate required fields
+    if (!supplyId || !exportId || !quantityBags) {
       return NextResponse.json(
-        { error: "Supply or Export not found" },
-        { status: 404 }
-      );
-    }
-
-    // Validate available quantity
-    const usedQuantity = await prisma.supplyExport.aggregate({
-      where: { supplyId: parseInt(supplyId) },
-      _sum: { quantityBags: true },
-    });
-
-    const availableQuantity =
-      supply.quantityBags - (usedQuantity._sum.quantityBags || 0);
-
-    if (quantityBags > availableQuantity) {
-      return NextResponse.json(
-        {
-          error: `Requested quantity (${quantityBags}) exceeds available supply (${availableQuantity})`,
-        },
+        { error: "Missing required fields: supplyId, exportId, quantityBags" },
         { status: 400 }
       );
     }
 
+    // Use enhanced validation
+    const validation = await SupplyExportValidator.validateMapping(
+      supplyId,
+      exportId,
+      parseInt(quantityBags)
+    );
+
+    // Create the mapping
     const supplyExport = await prisma.supplyExport.create({
       data: {
         supplyId: parseInt(supplyId),
         exportId: parseInt(exportId),
         quantityBags: parseInt(quantityBags),
+        notes: notes || null,
+        priority: priority ? parseInt(priority) : 0,
       },
       include: {
         supply: {
           select: {
             id: true,
             supplyDate: true,
+            quantityBags: true,
+            gradeA: true,
+            gradeB: true,
             supplier: { select: { name: true } },
           },
         },
@@ -127,6 +119,7 @@ export async function POST(request) {
           select: {
             id: true,
             exportDate: true,
+            quantityBags: true,
             destinationCountry: true,
             destinationCity: true,
             status: true,
@@ -135,11 +128,33 @@ export async function POST(request) {
       },
     });
 
-    return NextResponse.json(supplyExport, { status: 201 });
+    return NextResponse.json(
+      {
+        supplyExport,
+        validation,
+        message: "Supply-export mapping created successfully",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating supply-export:", error);
+
+    // Return validation errors with proper status codes
+    if (error.message.includes("not found")) {
+      return NextResponse.json({ error: error.message }, { status: 404 });
+    }
+    if (
+      error.message.includes("available") ||
+      error.message.includes("needs")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    if (error.message.includes("already exists")) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+
     return NextResponse.json(
-      { error: "Failed to create supply-export" },
+      { error: "Failed to create supply-export mapping" },
       { status: 500 }
     );
   }

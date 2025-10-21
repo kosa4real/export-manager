@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import DetailModal from "@/components/DetailModal";
 import ExportDetailContent from "@/components/ExportDetailContent";
+import ExportStatusIndicator from "@/components/ExportStatusIndicator";
+import AllocationWizard from "@/components/AllocationWizard";
+import { Wand2 } from "lucide-react";
 
 export default function ExportsPage() {
   const { data: session, status } = useSession();
@@ -31,6 +34,8 @@ export default function ExportsPage() {
   });
   const [filterStatus, setFilterStatus] = useState("");
   const [selectedExport, setSelectedExport] = useState(null);
+  const [showWizard, setShowWizard] = useState(false);
+  const [wizardExportId, setWizardExportId] = useState(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -374,13 +379,16 @@ export default function ExportsPage() {
                         </td>
 
                         <td className="p-4">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                              exportItem.status
-                            )}`}
-                          >
-                            {exportItem.status}
-                          </span>
+                          <div className="space-y-2">
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                                exportItem.status
+                              )}`}
+                            >
+                              {exportItem.status}
+                            </span>
+                            <ExportStatusIndicator exportId={exportItem.id} />
+                          </div>
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-3">
@@ -390,6 +398,18 @@ export default function ExportsPage() {
                             >
                               View
                             </button>
+                            {canEdit && (
+                              <button
+                                onClick={() => {
+                                  setWizardExportId(exportItem.id);
+                                  setShowWizard(true);
+                                }}
+                                className="text-purple-400 hover:text-purple-300 font-medium text-sm transition-colors duration-150 flex items-center gap-1"
+                              >
+                                <Wand2 className="w-3 h-3" />
+                                Allocate
+                              </button>
+                            )}
                             {canEdit && (
                               <Link
                                 href={`/dashboard/exports/edit/${exportItem.id}`}
@@ -479,6 +499,19 @@ export default function ExportsPage() {
           <ExportDetailContent exportData={selectedExport} isAdmin={isAdmin} />
         )}
       </DetailModal>
+
+      {/* Allocation Wizard */}
+      <AllocationWizard
+        isOpen={showWizard}
+        onClose={() => {
+          setShowWizard(false);
+          setWizardExportId(null);
+        }}
+        exportId={wizardExportId}
+        onAllocationComplete={() => {
+          loadData(pagination.page, filterStatus);
+        }}
+      />
     </div>
   );
 }

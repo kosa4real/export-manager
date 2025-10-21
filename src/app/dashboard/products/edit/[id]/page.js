@@ -1,12 +1,12 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 
 export default function EditSupplyPage({ params }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const supplyId = params.id;
+  const supplyId = use(params).id;
 
   const [suppliers, setSuppliers] = useState([]);
   const [formData, setFormData] = useState({
