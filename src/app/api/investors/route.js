@@ -37,6 +37,7 @@ export async function GET(request) {
           status: true,
           isActive: true,
           notes: true,
+          containerEquivalent: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -47,6 +48,9 @@ export async function GET(request) {
         total: investor ? 1 : 0,
         page: 1,
         limit: 1,
+        message: investor
+          ? null
+          : "Your investment details are being set up. Please contact an admin for assistance.",
       });
     }
 

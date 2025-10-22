@@ -32,6 +32,7 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   };
 
+  
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">

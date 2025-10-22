@@ -2,13 +2,13 @@
 
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 import Link from "next/link";
 
 export default function EditInvestorPage({ params }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { id } = params;
+  const { id } = use(params);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,19 +30,6 @@ export default function EditInvestorPage({ params }) {
     notes: "",
     userId: "",
   });
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      redirect("/login");
-    }
-  }, [status]);
-
-  useEffect(() => {
-    if (status === "authenticated" && id) {
-      fetchInvestor();
-      fetchUsers();
-    }
-  }, [status, id, fetchInvestor]);
 
   const fetchInvestor = useCallback(async () => {
     try {
@@ -77,6 +64,19 @@ export default function EditInvestorPage({ params }) {
       setLoading(false);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/login");
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "authenticated" && id) {
+      fetchInvestor();
+      fetchUsers();
+    }
+  }, [status, id, fetchInvestor]);
 
   const fetchUsers = async () => {
     try {
