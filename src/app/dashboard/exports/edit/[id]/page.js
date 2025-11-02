@@ -126,6 +126,7 @@ export default function EditExportPage({ params }) {
   }
 
   const isAdmin = session.user.role === "ADMIN";
+  const canEdit = ["ADMIN", "STAFF"].includes(session.user.role);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -391,118 +392,121 @@ export default function EditExportPage({ params }) {
             </div>
           </div>
 
-          <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold mb-4 text-emerald-400">
-              Clearing Agents & Fees
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Departure Clearing */}
-              <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
-                <h3 className="text-lg font-medium text-blue-400 mb-3 flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                    />
-                  </svg>
-                  Departure
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Clearing Agent
-                    </label>
-                    <input
-                      type="text"
-                      name="departureClearingAgent"
-                      value={formData.departureClearingAgent}
-                      onChange={handleInputChange}
-                      placeholder="Departure agent name"
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Clearing Fee (₦)
-                    </label>
-                    <input
-                      type="number"
-                      name="departureClearingFee"
-                      value={formData.departureClearingFee}
-                      onChange={handleInputChange}
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    />
+          {/* Clearing Agents & Fees - Admin/Staff Only */}
+          {canEdit && (
+            <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
+              <h2 className="text-xl font-semibold mb-4 text-emerald-400">
+                Clearing Agents & Fees
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Departure Clearing */}
+                <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
+                  <h3 className="text-lg font-medium text-blue-400 mb-3 flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      />
+                    </svg>
+                    Departure
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Agent
+                      </label>
+                      <input
+                        type="text"
+                        name="departureClearingAgent"
+                        value={formData.departureClearingAgent}
+                        onChange={handleInputChange}
+                        placeholder="Departure agent name"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Fee (₦)
+                      </label>
+                      <input
+                        type="number"
+                        name="departureClearingFee"
+                        value={formData.departureClearingFee}
+                        onChange={handleInputChange}
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Arrival Clearing */}
-              <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
-                <h3 className="text-lg font-medium text-green-400 mb-3 flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  Arrival
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Clearing Agent
-                    </label>
-                    <input
-                      type="text"
-                      name="arrivalClearingAgent"
-                      value={formData.arrivalClearingAgent}
-                      onChange={handleInputChange}
-                      placeholder="Arrival agent name"
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Clearing Fee (₦)
-                    </label>
-                    <input
-                      type="number"
-                      name="arrivalClearingFee"
-                      value={formData.arrivalClearingFee}
-                      onChange={handleInputChange}
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    />
+                {/* Arrival Clearing */}
+                <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
+                  <h3 className="text-lg font-medium text-green-400 mb-3 flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    Arrival
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Agent
+                      </label>
+                      <input
+                        type="text"
+                        name="arrivalClearingAgent"
+                        value={formData.arrivalClearingAgent}
+                        onChange={handleInputChange}
+                        placeholder="Arrival agent name"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Fee (₦)
+                      </label>
+                      <input
+                        type="number"
+                        name="arrivalClearingFee"
+                        value={formData.arrivalClearingFee}
+                        onChange={handleInputChange}
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {isAdmin && (
             <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6">

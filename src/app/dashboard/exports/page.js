@@ -215,7 +215,7 @@ export default function ExportsPage() {
             />
           </div>
 
-          {isAdmin && (
+          {canEdit && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <MetricCard
                 title="Total Revenue"
@@ -528,7 +528,11 @@ export default function ExportsPage() {
         canEdit={canEdit}
       >
         {selectedExport && (
-          <ExportDetailContent exportData={selectedExport} isAdmin={isAdmin} />
+          <ExportDetailContent
+            exportData={selectedExport}
+            isAdmin={isAdmin}
+            canEdit={canEdit}
+          />
         )}
       </DetailModal>
 
