@@ -17,6 +17,7 @@ export async function GET(request) {
   const destinationCountry = searchParams.get("destinationCountry");
   const status = searchParams.get("status");
   const isAdmin = session.user.role === "ADMIN";
+  const isInvestor = session.user.role === "INVESTOR";
 
   try {
     const where = {};
@@ -25,6 +26,29 @@ export async function GET(request) {
     }
     if (status) {
       where.status = status;
+    }
+
+    // If user is an investor, only show exports assigned to them
+    if (isInvestor) {
+      // Find the investor record linked to this user
+      const investor = await prisma.investor.findFirst({
+        where: { user: { id: parseInt(session.user.id) } },
+        select: { id: true },
+      });
+
+      if (investor) {
+        where.assignedInvestorId = investor.id;
+      } else {
+        // If no investor record found, return empty results
+        return NextResponse.json({
+          exports: [],
+          total: 0,
+          page,
+          limit,
+          totalPages: 0,
+          message: "No investment assignments found. Please contact an admin.",
+        });
+      }
     }
 
     const [exports, total] = await Promise.all([
@@ -41,14 +65,32 @@ export async function GET(request) {
           arrivalDate: true,
           destinationCountry: true,
           destinationCity: true,
-          clearingAgent: true,
+          departureClearingAgent: true,
+          departureClearingFee: true,
+          arrivalClearingAgent: true,
+          arrivalClearingFee: true,
+          clearingAgent: true, // Keep for backward compatibility
           buyer: true,
           containerNumber: true,
           status: true,
           notes: true,
+          assignedInvestorId: true,
           createdAt: true,
           updatedAt: true,
+          assignedInvestor: {
+            select: {
+              id: true,
+              name: true,
+              profitShare: true,
+            },
+          },
           ...(isAdmin && {
+            amountReceived: true,
+            clearingFee: true,
+            netProfit: true,
+          }),
+          // For investors, show financial data but calculate their share
+          ...(isInvestor && {
             amountReceived: true,
             clearingFee: true,
             netProfit: true,
@@ -57,6 +99,26 @@ export async function GET(request) {
       }),
       prisma.exportShipment.count({ where }),
     ]);
+
+    // Calculate investor profit share for investor users
+    if (isInvestor && exports.length > 0) {
+      const investor = await prisma.investor.findFirst({
+        where: { user: { id: parseInt(session.user.id) } },
+        select: { profitShare: true },
+      });
+
+      if (investor) {
+        exports.forEach((exportItem) => {
+          if (exportItem.netProfit && investor.profitShare) {
+            // Parse profit share (e.g., "50/50" -> 50%)
+            const shareMatch = investor.profitShare.match(/(\d+)/);
+            const sharePercentage = shareMatch ? parseInt(shareMatch[1]) : 50;
+            exportItem.investorProfit =
+              (exportItem.netProfit * sharePercentage) / 100;
+          }
+        });
+      }
+    }
 
     return NextResponse.json({
       exports,
@@ -74,7 +136,6 @@ export async function GET(request) {
   }
 }
 
-// POST /api/exports — Create new export shipment
 // POST /api/exports — Create new export shipment
 export async function POST(request) {
   const session = await getServerSession(authOptions);
@@ -120,20 +181,27 @@ export async function POST(request) {
       arrivalDate: data.arrivalDate ? new Date(data.arrivalDate) : null,
       destinationCountry: data.destinationCountry || "",
       destinationCity: data.destinationCity || "",
-      clearingAgent: data.clearingAgent || null,
+      departureClearingAgent: data.departureClearingAgent || null,
+      departureClearingFee: data.departureClearingFee
+        ? parseFloat(data.departureClearingFee)
+        : null,
+      arrivalClearingAgent: data.arrivalClearingAgent || null,
+      arrivalClearingFee: data.arrivalClearingFee
+        ? parseFloat(data.arrivalClearingFee)
+        : null,
       buyer: data.buyer || null,
       containerNumber: data.containerNumber || null,
       status: statusValue, // ✅ Now guaranteed to be a valid enum value
       notes: data.notes || null,
+      assignedInvestorId: data.assignedInvestorId
+        ? parseInt(data.assignedInvestorId)
+        : null,
     };
 
     // ✅ Admin-only financial fields
     if (isAdmin) {
       if (data.amountReceived !== undefined && data.amountReceived !== null) {
         exportData.amountReceived = parseFloat(data.amountReceived);
-      }
-      if (data.clearingFee !== undefined && data.clearingFee !== null) {
-        exportData.clearingFee = parseFloat(data.clearingFee);
       }
       if (data.netProfit !== undefined && data.netProfit !== null) {
         exportData.netProfit = parseFloat(data.netProfit);
@@ -150,16 +218,28 @@ export async function POST(request) {
         arrivalDate: true,
         destinationCountry: true,
         destinationCity: true,
-        clearingAgent: true,
+        departureClearingAgent: true,
+        departureClearingFee: true,
+        arrivalClearingAgent: true,
+        arrivalClearingFee: true,
+        clearingAgent: true, // Keep for backward compatibility
         buyer: true,
         containerNumber: true,
         status: true,
         notes: true,
+        assignedInvestorId: true,
+        assignedInvestor: {
+          select: {
+            id: true,
+            name: true,
+            profitShare: true,
+          },
+        },
         createdAt: true,
         updatedAt: true,
         ...(isAdmin && {
           amountReceived: true,
-          clearingFee: true,
+          clearingFee: true, // Keep for backward compatibility
           netProfit: true,
         }),
       },

@@ -6,19 +6,30 @@ import { useSession, signOut } from "next-auth/react";
 import Sidebar from "./Sidebar";
 
 const GlobalLayout = ({ children }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Define routes where sidebar should NOT be shown
   const excludedRoutes = ["/", "/login"];
   const shouldShowSidebar = session && !excludedRoutes.includes(pathname);
 
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return children;
+  }
 
   if (!shouldShowSidebar) {
     return children;
@@ -73,7 +84,7 @@ const GlobalLayout = ({ children }) => {
               </button>
 
               <h1 className="text-xl font-semibold text-white">
-                Welcome back, {session.user.name}
+                Welcome back, {session?.user?.name || "User"}
               </h1>
             </div>
 
@@ -100,7 +111,7 @@ const GlobalLayout = ({ children }) => {
                 <button className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-800 transition-colors">
                   <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
-                      {session.user.name?.charAt(0).toUpperCase()}
+                      {session?.user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </span>
                   </div>
                   <svg
@@ -122,13 +133,13 @@ const GlobalLayout = ({ children }) => {
                 <div className="absolute right-0 top-full mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="p-3 border-b border-slate-700">
                     <p className="text-white font-medium text-sm">
-                      {session.user.name}
+                      {session?.user?.name || "User"}
                     </p>
                     <p className="text-slate-400 text-xs">
-                      {session.user.email}
+                      {session?.user?.email || ""}
                     </p>
                     <span className="inline-block mt-1 px-2 py-1 bg-slate-700 rounded text-xs text-slate-300">
-                      {session.user.role}
+                      {session?.user?.role || "USER"}
                     </span>
                   </div>
                   <div className="p-2">

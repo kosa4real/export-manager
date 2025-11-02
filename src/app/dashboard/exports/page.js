@@ -8,7 +8,8 @@ import DetailModal from "@/components/DetailModal";
 import ExportDetailContent from "@/components/ExportDetailContent";
 import ExportStatusIndicator from "@/components/ExportStatusIndicator";
 import AllocationWizard from "@/components/AllocationWizard";
-import { Wand2 } from "lucide-react";
+import InvestorAssignmentModal from "@/components/InvestorAssignmentModal";
+import { Wand2, Users } from "lucide-react";
 
 export default function ExportsPage() {
   const { data: session, status } = useSession();
@@ -36,6 +37,8 @@ export default function ExportsPage() {
   const [selectedExport, setSelectedExport] = useState(null);
   const [showWizard, setShowWizard] = useState(false);
   const [wizardExportId, setWizardExportId] = useState(null);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [assignmentExport, setAssignmentExport] = useState(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -352,6 +355,9 @@ export default function ExportsPage() {
                         Status
                       </th>
                       <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
+                        Assigned Investor
+                      </th>
+                      <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -391,6 +397,20 @@ export default function ExportsPage() {
                           </div>
                         </td>
                         <td className="p-4">
+                          {exportItem.assignedInvestor ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                              <span className="text-emerald-400 font-medium text-sm">
+                                {exportItem.assignedInvestor.name}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-500 text-sm">
+                              Unassigned
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-4">
                           <div className="flex items-center gap-3">
                             <button
                               onClick={() => setSelectedExport(exportItem)}
@@ -398,6 +418,18 @@ export default function ExportsPage() {
                             >
                               View
                             </button>
+                            {isAdmin && (
+                              <button
+                                onClick={() => {
+                                  setAssignmentExport(exportItem);
+                                  setShowAssignmentModal(true);
+                                }}
+                                className="text-amber-400 hover:text-amber-300 font-medium text-sm transition-colors duration-150 flex items-center gap-1"
+                              >
+                                <Users className="w-3 h-3" />
+                                Assign
+                              </button>
+                            )}
                             {canEdit && (
                               <button
                                 onClick={() => {
@@ -509,6 +541,19 @@ export default function ExportsPage() {
         }}
         exportId={wizardExportId}
         onAllocationComplete={() => {
+          loadData(pagination.page, filterStatus);
+        }}
+      />
+
+      {/* Investor Assignment Modal */}
+      <InvestorAssignmentModal
+        isOpen={showAssignmentModal}
+        onClose={() => {
+          setShowAssignmentModal(false);
+          setAssignmentExport(null);
+        }}
+        exportData={assignmentExport}
+        onAssignmentComplete={() => {
           loadData(pagination.page, filterStatus);
         }}
       />

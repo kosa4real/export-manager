@@ -1,6 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import ContainerEquivalentDisplay from "./ContainerEquivalentDisplay";
+
 export default function InvestorDetailContent({ investorData, isAdmin }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="animate-pulse">
+        <div className="h-4 bg-slate-700 rounded mb-2"></div>
+        <div className="h-4 bg-slate-700 rounded mb-2"></div>
+        <div className="h-4 bg-slate-700 rounded"></div>
+      </div>
+    );
+  }
   const formatCurrency = (amount, currency = "NGN") => {
     if (!amount) return "₦0";
     return new Intl.NumberFormat("en-NG", {
@@ -12,11 +30,14 @@ export default function InvestorDetailContent({ investorData, isAdmin }) {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      // Use a more consistent format to avoid hydration issues
+      return date.toISOString().split("T")[0]; // YYYY-MM-DD format
+    } catch (error) {
+      return "Invalid Date";
+    }
   };
 
   const getStatusColor = (status) => {
@@ -169,6 +190,17 @@ export default function InvestorDetailContent({ investorData, isAdmin }) {
               <span className="text-white">{investorData.bankName}</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Container Equivalent Display */}
+      {investorData.containerEquivalent && (
+        <div className="md:col-span-2 mt-6">
+          <ContainerEquivalentDisplay
+            amountInvested={investorData.amountInvested}
+            containerEquivalent={investorData.containerEquivalent}
+            showCalculation={isAdmin}
+          />
         </div>
       )}
 

@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -64,51 +63,59 @@ model CoalSupply {
 }
 
 model ExportShipment {
-  id                 Int            @id @default(autoincrement())
-  exportDate         DateTime
-  quantityBags       Int
-  departureDate      DateTime
-  arrivalDate        DateTime?
-  destinationCountry String         @db.VarChar(100)
-  destinationCity    String         @db.VarChar(100)
-  clearingAgent      String?        @db.VarChar(100)
-  buyer              String?        @db.VarChar(100)
-  amountReceived     Decimal?       @db.Decimal(12, 2)
-  clearingFee        Decimal?       @db.Decimal(12, 2)
-  netProfit          Decimal?       @db.Decimal(12, 2)
-  containerNumber    String?        @unique @db.VarChar(50)
-  status             ShipmentStatus @default(PENDING)
-  notes              String?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  supplies           SupplyExport[]
+  id                    Int            @id @default(autoincrement())
+  exportDate            DateTime
+  quantityBags          Int
+  departureDate         DateTime
+  arrivalDate           DateTime?
+  destinationCountry    String         @db.VarChar(100)
+  destinationCity       String         @db.VarChar(100)
+  departureClearingAgent String?       @db.VarChar(100)
+  departureClearingFee   Decimal?      @db.Decimal(12, 2)
+  arrivalClearingAgent   String?       @db.VarChar(100)
+  arrivalClearingFee     Decimal?      @db.Decimal(12, 2)
+  clearingAgent         String?        @db.VarChar(100) // Keep for backward compatibility
+  buyer                 String?        @db.VarChar(100)
+  amountReceived        Decimal?       @db.Decimal(12, 2)
+  clearingFee           Decimal?       @db.Decimal(12, 2) // Keep for backward compatibility
+  netProfit             Decimal?       @db.Decimal(12, 2)
+  containerNumber       String?        @unique @db.VarChar(50)
+  status                ShipmentStatus @default(PENDING)
+  notes                 String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  assignedInvestorId    Int?           @map("assigned_investor_id")
+  assignedInvestor      Investor?      @relation("InvestorExports", fields: [assignedInvestorId], references: [id])
+  supplies              SupplyExport[]
 
   @@index([exportDate])
   @@index([destinationCountry])
   @@index([departureDate])
+  @@index([assignedInvestorId])
   @@map("exports")
 }
 
 model Investor {
-  id                  Int            @id @default(autoincrement())
-  name                String         @db.VarChar(100)
-  contactInfo         String?        @db.VarChar(100)
-  email               String?        @db.VarChar(100)
+  id                  Int              @id @default(autoincrement())
+  name                String           @db.VarChar(100)
+  contactInfo         String?          @db.VarChar(100)
+  email               String?          @db.VarChar(100)
   investmentDate      DateTime
-  amountInvested      Decimal        @db.Decimal(12, 2)
-  currency            String         @default("USD") @db.VarChar(3)
-  bankName            String         @db.VarChar(100)
-  amountReceived      Decimal        @db.Decimal(12, 2)
-  exchangeRate        Decimal        @db.Decimal(8, 4)
-  profitShare         String         @db.VarChar(50)
-  containerEquivalent Decimal?       @db.Decimal(10, 2)
-  status              InvestorStatus @default(ACTIVE)
-  isActive            Boolean        @default(true)
+  amountInvested      Decimal          @db.Decimal(12, 2)
+  currency            String           @default("USD") @db.VarChar(3)
+  bankName            String           @db.VarChar(100)
+  amountReceived      Decimal          @db.Decimal(12, 2)
+  exchangeRate        Decimal          @db.Decimal(8, 4)
+  profitShare         String           @db.VarChar(50)
+  containerEquivalent Decimal?         @db.Decimal(10, 2)
+  status              InvestorStatus   @default(ACTIVE)
+  isActive            Boolean          @default(true)
   notes               String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  dataRequests        DataRequest[]  @relation("InvestorDataRequests")
-  user                User?          @relation("InvestorUser")
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  dataRequests        DataRequest[]    @relation("InvestorDataRequests")
+  assignedExports     ExportShipment[] @relation("InvestorExports")
+  user                User?            @relation("InvestorUser")
 
   @@unique([name, investmentDate])
   @@index([investmentDate])
@@ -120,11 +127,11 @@ model SupplyExport {
   supplyId     Int            @map("supply_id")
   exportId     Int            @map("export_id")
   quantityBags Int
-  allocatedAt  DateTime       @default(now())
-  priority     Int            @default(0)
-  notes        String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  allocatedAt  DateTime       @default(now())
+  notes        String?
+  priority     Int            @default(0)
   export       ExportShipment @relation(fields: [exportId], references: [id], onDelete: Cascade)
   supply       CoalSupply     @relation(fields: [supplyId], references: [id], onDelete: Cascade)
 

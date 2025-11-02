@@ -35,6 +35,22 @@ export default function InvestorsPage() {
   const [chartData, setChartData] = useState(null);
   const [exports, setExports] = useState([]);
 
+  // Helper functions
+  const formatCurrency = (amount, currency = "NGN") => {
+    if (!amount) return "₦0";
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatNumber = (num) => {
+    if (!num) return "0";
+    return new Intl.NumberFormat("en-US").format(num);
+  };
+
   useEffect(() => {
     if (status === "unauthenticated") {
       redirect("/login");
@@ -69,10 +85,11 @@ export default function InvestorsPage() {
           const exportsResponse = await fetch("/api/investors/exports");
           if (exportsResponse.ok) {
             const exportsData = await exportsResponse.json();
-            const exportsList = exportsData.exports || [];
-            setExports(exportsList);
+            const assignedExports = exportsData.assignedExports || [];
+            setExports({ assigned: assignedExports });
 
-            const statusCounts = exportsList.reduce(
+            // Create chart data from assigned exports
+            const statusCounts = assignedExports.reduce(
               (acc, exp) => ({
                 ...acc,
                 [exp.status]: (acc[exp.status] || 0) + 1,
@@ -80,22 +97,24 @@ export default function InvestorsPage() {
               {}
             );
 
-            setChartData({
-              labels: Object.keys(statusCounts),
-              datasets: [
-                {
-                  data: Object.values(statusCounts),
-                  backgroundColor: [
-                    "#34D399", // emerald-400 (DELIVERED)
-                    "#3B82F6", // blue-500 (SHIPPED)
-                    "#F59E0B", // amber-500 (PENDING)
-                    "#EF4444", // red-500 (CANCELLED)
-                  ],
-                  borderColor: ["#1F2937"], // slate-800
-                  borderWidth: 1,
-                },
-              ],
-            });
+            if (Object.keys(statusCounts).length > 0) {
+              setChartData({
+                labels: Object.keys(statusCounts),
+                datasets: [
+                  {
+                    data: Object.values(statusCounts),
+                    backgroundColor: [
+                      "#34D399", // emerald-400 (DELIVERED)
+                      "#3B82F6", // blue-500 (IN_TRANSIT)
+                      "#F59E0B", // amber-500 (PENDING)
+                      "#EF4444", // red-500 (CANCELLED)
+                    ],
+                    borderColor: ["#1F2937"], // slate-800
+                    borderWidth: 1,
+                  },
+                ],
+              });
+            }
           }
         } catch (exportError) {
           console.error("Error fetching exports for chart:", exportError);
@@ -298,12 +317,13 @@ export default function InvestorsPage() {
                 </div>
               )}
 
-              {/* Related Exports */}
+              {/* My Assigned Exports */}
               <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
-                <h2 className="text-2xl font-semibold text-white mb-4">
-                  Export Activities
+                <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <Ship className="w-5 h-5" />
+                  My Assigned Exports
                 </h2>
-                {exports && exports.length > 0 ? (
+                {exports?.assigned && exports.assigned.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-slate-800/80 border-b border-slate-700">
@@ -323,10 +343,13 @@ export default function InvestorsPage() {
                           <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
                             Status
                           </th>
+                          <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
+                            My Profit
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800">
-                        {exports.map((exportItem) => (
+                        {exports.assigned.map((exportItem) => (
                           <tr
                             key={exportItem.id}
                             className="hover:bg-slate-800/50 transition-colors duration-150"
@@ -340,7 +363,7 @@ export default function InvestorsPage() {
                               ).toLocaleDateString()}
                             </td>
                             <td className="p-4 text-slate-300 text-sm">
-                              {exportItem.quantityBags}
+                              {exportItem.quantityBags?.toLocaleString()}
                             </td>
                             <td className="p-4 text-slate-300 text-sm">
                               {exportItem.destinationCountry},{" "}
@@ -361,17 +384,88 @@ export default function InvestorsPage() {
                                 {exportItem.status}
                               </span>
                             </td>
+                            <td className="p-4">
+                              {exportItem.investorProfit ? (
+                                <div className="text-right">
+                                  <p className="text-green-400 font-semibold">
+                                    {formatCurrency(exportItem.investorProfit)}
+                                  </p>
+                                  <p className="text-slate-400 text-xs">
+                                    ({exportItem.profitPercentage}% share)
+                                  </p>
+                                </div>
+                              ) : (
+                                <span className="text-slate-500 text-sm">
+                                  {exportItem.status === "DELIVERED"
+                                    ? "Calculating..."
+                                    : "Pending"}
+                                </span>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 ) : (
-                  <p className="text-slate-400 text-sm">
-                    No export activities available at the moment.
-                  </p>
+                  <div className="text-center py-8">
+                    <Ship className="w-12 h-12 mx-auto mb-3 text-slate-600" />
+                    <p className="text-slate-400 text-sm mb-2">
+                      No exports assigned to your investment yet
+                    </p>
+                    <p className="text-slate-500 text-xs">
+                      The admin will assign exports to your investment as they
+                      become available
+                    </p>
+                  </div>
                 )}
               </div>
+
+              {/* Investment Performance Summary */}
+              {exports?.assigned && exports.assigned.length > 0 && (
+                <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
+                  <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    Investment Performance
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-slate-800/60 p-4 rounded-lg">
+                      <p className="text-slate-400 text-sm">
+                        Total Exports Assigned
+                      </p>
+                      <p className="text-white font-bold text-xl">
+                        {exports.assigned.length}
+                      </p>
+                    </div>
+                    <div className="bg-slate-800/60 p-4 rounded-lg">
+                      <p className="text-slate-400 text-sm">
+                        Total Bags Exported
+                      </p>
+                      <p className="text-purple-400 font-bold text-xl">
+                        {exports.assigned
+                          .reduce(
+                            (sum, exp) => sum + (exp.quantityBags || 0),
+                            0
+                          )
+                          .toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="bg-slate-800/60 p-4 rounded-lg">
+                      <p className="text-slate-400 text-sm">
+                        Total Profit Earned
+                      </p>
+                      <p className="text-green-400 font-bold text-xl">
+                        {formatCurrency(
+                          exports.assigned.reduce(
+                            (sum, exp) => sum + (exp.investorProfit || 0),
+                            0
+                          )
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Contact Admin */}
               <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
@@ -395,21 +489,6 @@ export default function InvestorsPage() {
       </div>
     );
   }
-
-  const formatCurrency = (amount, currency = "NGN") => {
-    if (!amount) return "₦0";
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatNumber = (num) => {
-    if (!num) return "0";
-    return new Intl.NumberFormat("en-US").format(num);
-  };
 
   const renderStatsCards = () => {
     if (statsLoading) {

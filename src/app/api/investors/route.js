@@ -38,6 +38,7 @@ export async function GET(request) {
           isActive: true,
           notes: true,
           containerEquivalent: true,
+          amountInvested: true, // Investors should see their own investment amount
           createdAt: true,
           updatedAt: true,
         },

@@ -16,12 +16,14 @@ export default function NewExportPage() {
     arrivalDate: "",
     destinationCountry: "",
     destinationCity: "",
-    clearingAgent: "",
+    departureClearingAgent: "",
+    departureClearingFee: "",
+    arrivalClearingAgent: "",
+    arrivalClearingFee: "",
     buyer: "",
     containerNumber: "",
     status: "PENDING",
     amountReceived: "",
-    clearingFee: "",
     netProfit: "",
     notes: "",
   });
@@ -64,7 +66,10 @@ export default function NewExportPage() {
         arrivalDate: formData.arrivalDate || null,
         destinationCountry: formData.destinationCountry,
         destinationCity: formData.destinationCity,
-        clearingAgent: formData.clearingAgent,
+        departureClearingAgent: formData.departureClearingAgent || null,
+        departureClearingFee: parseFloat(formData.departureClearingFee) || null,
+        arrivalClearingAgent: formData.arrivalClearingAgent || null,
+        arrivalClearingFee: parseFloat(formData.arrivalClearingFee) || null,
         buyer: formData.buyer,
         containerNumber: formData.containerNumber || null,
         status: formData.status,
@@ -73,7 +78,6 @@ export default function NewExportPage() {
 
       if (isAdmin) {
         payload.amountReceived = parseFloat(formData.amountReceived) || 0;
-        payload.clearingFee = parseFloat(formData.clearingFee) || 0;
         payload.netProfit = parseFloat(formData.netProfit) || 0;
       }
 
@@ -287,21 +291,6 @@ export default function NewExportPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Clearing Agent <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.clearingAgent}
-                    onChange={(e) =>
-                      handleChange("clearingAgent", e.target.value)
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                    placeholder="Agent name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
                     Buyer <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -316,13 +305,129 @@ export default function NewExportPage() {
               </div>
             </div>
 
+            {/* Clearing Agents & Fees */}
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Clearing Agents & Fees
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Departure Clearing */}
+                <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
+                  <h3 className="text-lg font-medium text-blue-400 mb-3 flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      />
+                    </svg>
+                    Departure
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Agent
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.departureClearingAgent}
+                        onChange={(e) =>
+                          handleChange("departureClearingAgent", e.target.value)
+                        }
+                        className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        placeholder="Departure agent name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Fee (₦)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.departureClearingFee}
+                        onChange={(e) =>
+                          handleChange("departureClearingFee", e.target.value)
+                        }
+                        className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Arrival Clearing */}
+                <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
+                  <h3 className="text-lg font-medium text-green-400 mb-3 flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    Arrival
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Agent
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.arrivalClearingAgent}
+                        onChange={(e) =>
+                          handleChange("arrivalClearingAgent", e.target.value)
+                        }
+                        className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        placeholder="Arrival agent name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Clearing Fee (₦)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.arrivalClearingFee}
+                        onChange={(e) =>
+                          handleChange("arrivalClearingFee", e.target.value)
+                        }
+                        className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Financial Information (Admin Only) */}
             {isAdmin && (
               <div>
                 <h2 className="text-xl font-semibold text-white mb-4">
                   Financial Information
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                       Amount Received ($){" "}
@@ -334,22 +439,6 @@ export default function NewExportPage() {
                       value={formData.amountReceived}
                       onChange={(e) =>
                         handleChange("amountReceived", e.target.value)
-                      }
-                      className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                      placeholder="0.00"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Clearing Fee ($) <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.clearingFee}
-                      onChange={(e) =>
-                        handleChange("clearingFee", e.target.value)
                       }
                       className="w-full px-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
                       placeholder="0.00"

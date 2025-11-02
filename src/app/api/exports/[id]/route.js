@@ -12,6 +12,7 @@ export async function GET(request, { params }) {
 
   const { id } = params;
   const isAdmin = session.user.role === "ADMIN";
+  const isInvestor = session.user.role === "INVESTOR";
 
   // Validate ID
   const exportId = parseInt(id);
@@ -20,8 +21,27 @@ export async function GET(request, { params }) {
   }
 
   try {
+    let whereClause = { id: exportId };
+
+    // If user is an investor, only allow access to exports assigned to them
+    if (isInvestor) {
+      const investor = await prisma.investor.findFirst({
+        where: { user: { id: parseInt(session.user.id) } },
+        select: { id: true },
+      });
+
+      if (!investor) {
+        return NextResponse.json(
+          { error: "No investment record found" },
+          { status: 403 }
+        );
+      }
+
+      whereClause.assignedInvestorId = investor.id;
+    }
+
     const exportShipment = await prisma.exportShipment.findUnique({
-      where: { id: exportId },
+      where: whereClause,
       select: {
         id: true,
         exportDate: true,
@@ -30,26 +50,59 @@ export async function GET(request, { params }) {
         arrivalDate: true,
         destinationCountry: true,
         destinationCity: true,
-        clearingAgent: true,
+        departureClearingAgent: true,
+        departureClearingFee: true,
+        arrivalClearingAgent: true,
+        arrivalClearingFee: true,
+        clearingAgent: true, // Keep for backward compatibility
         buyer: true,
         containerNumber: true,
         status: true,
         notes: true,
+        assignedInvestorId: true,
         createdAt: true,
         updatedAt: true,
         ...(isAdmin && {
           amountReceived: true,
-          clearingFee: true,
+          clearingFee: true, // Keep for backward compatibility
           netProfit: true,
+        }),
+        // For investors, show financial data but calculate their share
+        ...(isInvestor && {
+          amountReceived: true,
+          clearingFee: true, // Keep for backward compatibility
+          netProfit: true,
+          assignedInvestor: {
+            select: {
+              profitShare: true,
+            },
+          },
         }),
       },
     });
 
     if (!exportShipment) {
       return NextResponse.json(
-        { error: `Export shipment with ID ${exportId} not found` },
+        {
+          error: isInvestor
+            ? "Export not found or not assigned to you"
+            : `Export shipment with ID ${exportId} not found`,
+        },
         { status: 404 }
       );
+    }
+
+    // Calculate investor profit share for investor users
+    if (
+      isInvestor &&
+      exportShipment.netProfit &&
+      exportShipment.assignedInvestor?.profitShare
+    ) {
+      const shareMatch =
+        exportShipment.assignedInvestor.profitShare.match(/(\d+)/);
+      const sharePercentage = shareMatch ? parseInt(shareMatch[1]) : 50;
+      exportShipment.investorProfit =
+        (exportShipment.netProfit * sharePercentage) / 100;
     }
 
     return NextResponse.json(exportShipment);
@@ -110,8 +163,21 @@ export async function PUT(request, { params }) {
     if (data.destinationCity !== undefined) {
       updateData.destinationCity = data.destinationCity;
     }
-    if (data.clearingAgent !== undefined) {
-      updateData.clearingAgent = data.clearingAgent || null;
+    if (data.departureClearingAgent !== undefined) {
+      updateData.departureClearingAgent = data.departureClearingAgent || null;
+    }
+    if (data.departureClearingFee !== undefined) {
+      updateData.departureClearingFee = data.departureClearingFee
+        ? parseFloat(data.departureClearingFee)
+        : null;
+    }
+    if (data.arrivalClearingAgent !== undefined) {
+      updateData.arrivalClearingAgent = data.arrivalClearingAgent || null;
+    }
+    if (data.arrivalClearingFee !== undefined) {
+      updateData.arrivalClearingFee = data.arrivalClearingFee
+        ? parseFloat(data.arrivalClearingFee)
+        : null;
     }
     if (data.buyer !== undefined) {
       updateData.buyer = data.buyer || null;
@@ -133,11 +199,6 @@ export async function PUT(request, { params }) {
           ? parseFloat(data.amountReceived)
           : null;
       }
-      if (data.clearingFee !== undefined) {
-        updateData.clearingFee = data.clearingFee
-          ? parseFloat(data.clearingFee)
-          : null;
-      }
       if (data.netProfit !== undefined) {
         updateData.netProfit = data.netProfit
           ? parseFloat(data.netProfit)
@@ -156,7 +217,11 @@ export async function PUT(request, { params }) {
         arrivalDate: true,
         destinationCountry: true,
         destinationCity: true,
-        clearingAgent: true,
+        departureClearingAgent: true,
+        departureClearingFee: true,
+        arrivalClearingAgent: true,
+        arrivalClearingFee: true,
+        clearingAgent: true, // Keep for backward compatibility
         buyer: true,
         containerNumber: true,
         status: true,
@@ -165,7 +230,7 @@ export async function PUT(request, { params }) {
         updatedAt: true,
         ...(isAdmin && {
           amountReceived: true,
-          clearingFee: true,
+          clearingFee: true, // Keep for backward compatibility
           netProfit: true,
         }),
       },

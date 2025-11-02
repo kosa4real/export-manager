@@ -15,10 +15,29 @@ export async function GET(request) {
 
   try {
     if (isInvestor) {
-      // For investors, show all exports (they're funding the overall operation)
-      const exports = await prisma.exportShipment.findMany({
+      // Find the investor record linked to this user
+      const investor = await prisma.investor.findFirst({
+        where: { user: { id: parseInt(session.user.id) } },
+        select: {
+          id: true,
+          profitShare: true,
+          containerEquivalent: true,
+          amountInvested: true,
+        },
+      });
+
+      if (!investor) {
+        return NextResponse.json({
+          exports: [],
+          total: 0,
+          message: "No investment record found. Please contact an admin.",
+        });
+      }
+
+      // Get exports assigned to this investor
+      const assignedExports = await prisma.exportShipment.findMany({
+        where: { assignedInvestorId: investor.id },
         orderBy: { exportDate: "desc" },
-        take: 50, // Limit to recent exports
         select: {
           id: true,
           exportDate: true,
@@ -28,12 +47,41 @@ export async function GET(request) {
           status: true,
           departureDate: true,
           arrivalDate: true,
+          amountReceived: true,
+          clearingFee: true,
+          netProfit: true,
+          containerNumber: true,
         },
       });
 
+      // Calculate investor's profit share for each export
+      const exportsWithProfitShare = assignedExports.map((exportItem) => {
+        let investorProfit = 0;
+        let profitPercentage = 0;
+
+        if (exportItem.netProfit && investor.profitShare) {
+          // Parse profit share (e.g., "50/50" -> 50%)
+          const shareMatch = investor.profitShare.match(/(\d+)/);
+          profitPercentage = shareMatch ? parseInt(shareMatch[1]) : 50;
+          investorProfit = (exportItem.netProfit * profitPercentage) / 100;
+        }
+
+        return {
+          ...exportItem,
+          investorProfit,
+          profitPercentage,
+          containerEquivalent: investor.containerEquivalent,
+        };
+      });
+
       return NextResponse.json({
-        exports,
-        total: exports.length,
+        assignedExports: exportsWithProfitShare,
+        investor: {
+          containerEquivalent: investor.containerEquivalent,
+          profitShare: investor.profitShare,
+          amountInvested: investor.amountInvested,
+        },
+        total: assignedExports.length,
       });
     }
 
@@ -49,6 +97,14 @@ export async function GET(request) {
         status: true,
         departureDate: true,
         arrivalDate: true,
+        assignedInvestorId: true,
+        assignedInvestor: {
+          select: {
+            id: true,
+            name: true,
+            profitShare: true,
+          },
+        },
         ...(isAdmin && {
           amountReceived: true,
           clearingFee: true,
