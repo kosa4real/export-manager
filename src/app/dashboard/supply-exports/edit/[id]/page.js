@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 
 export default function EditSupplyExportPage() {
@@ -28,9 +28,7 @@ export default function EditSupplyExportPage() {
       fetchSupplies();
       fetchExports();
     }
-  }, [status, params.id]);
-
-  const fetchSupplyExport = async () => {
+  const fetchSupplyExport = useCallback(async () => {
     try {
       const response = await fetch(`/api/supply-exports/${params.id}`);
       if (!response.ok) throw new Error("Failed to fetch supply-export");
@@ -45,7 +43,18 @@ export default function EditSupplyExportPage() {
     } finally {
       setInitialLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      ["ADMIN", "STAFF"].includes(session.user.role)
+    ) {
+      fetchSupplyExport();
+      fetchSupplies();
+      fetchExports();
+    }
+  }, [status, session?.user?.role, fetchSupplyExport]);
 
   const fetchSupplies = async () => {
     try {

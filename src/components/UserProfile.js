@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import {
   User,
@@ -34,11 +34,7 @@ const UserProfile = ({ userId, onClose }) => {
   const isOwnProfile = userId === parseInt(session?.user?.id);
   const canEdit = isOwnProfile || session?.user?.role === "ADMIN";
 
-  useEffect(() => {
-    fetchUser();
-  }, [userId]);
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/users/${userId}`);
@@ -62,7 +58,11 @@ const UserProfile = ({ userId, onClose }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    fetchUser();
+  }, [userId, fetchUser]);
 
   const handleSave = async () => {
     setError("");

@@ -43,8 +43,8 @@ export default function TestSessionPage() {
             Session Test Page
           </h1>
           <p className="text-slate-400">
-            Test the auto logout functionality - you'll be logged out after 1
-            hour of inactivity
+            Test the auto logout functionality - you&apos;ll be logged out after
+            1 hour of inactivity
           </p>
         </div>
 
@@ -136,8 +136,8 @@ export default function TestSessionPage() {
             <p>1. Leave this page open without any interaction</p>
             <p>2. After 55 minutes, you should see a warning modal</p>
             <p>
-              3. If you don't interact with the warning, you'll be logged out
-              after 5 more minutes
+              3. If you don&apos;t interact with the warning, you&apos;ll be
+              logged out after 5 more minutes
             </p>
             <p>
               4. Any activity (mouse move, click, etc.) will reset the timer

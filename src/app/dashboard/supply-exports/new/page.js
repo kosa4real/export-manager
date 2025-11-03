@@ -25,7 +25,7 @@ export default function NewSupplyExportPage() {
       fetchSupplies();
       fetchExports();
     }
-  }, [status]);
+  }, [status, session?.user?.role]);
 
   const fetchSupplies = async () => {
     try {

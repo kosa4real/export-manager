@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Wand2,
   CheckCircle,
@@ -54,13 +54,7 @@ export default function AllocationWizard({
     },
   ];
 
-  useEffect(() => {
-    if (isOpen && exportId) {
-      fetchSuggestions();
-    }
-  }, [isOpen, exportId, strategy]);
-
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -97,7 +91,13 @@ export default function AllocationWizard({
     } finally {
       setLoading(false);
     }
-  };
+  }, [exportId, strategy]);
+
+  useEffect(() => {
+    if (isOpen && exportId) {
+      fetchSuggestions();
+    }
+  }, [isOpen, exportId, strategy, fetchSuggestions]);
 
   const handleAllocationToggle = (supplyId, checked) => {
     setSelectedAllocations((prev) =>

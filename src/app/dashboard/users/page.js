@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UserManagementModal from "@/components/UserManagementModal";
@@ -33,7 +33,7 @@ const UsersPage = () => {
   }, [session, status, router]);
 
   // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -58,7 +58,7 @@ const UsersPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, searchTerm, roleFilter]);
 
   // Fetch investors for linking
   const fetchInvestors = async () => {
@@ -78,7 +78,7 @@ const UsersPage = () => {
       fetchUsers();
       fetchInvestors();
     }
-  }, [session, currentPage, searchTerm, roleFilter]);
+  }, [session, fetchUsers]);
 
   const handleUserSaved = (savedUser) => {
     fetchUsers(); // Refresh the list

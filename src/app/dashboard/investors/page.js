@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
@@ -57,14 +57,7 @@ export default function InvestorsPage() {
     }
   }, [status]);
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchInvestors();
-      fetchStats();
-    }
-  }, [status]);
-
-  const fetchInvestors = async () => {
+  const fetchInvestors = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/investors?page=1&limit=10");
@@ -126,7 +119,14 @@ export default function InvestorsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user.role]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchInvestors();
+      fetchStats();
+    }
+  }, [status, fetchInvestors]);
 
   const fetchStats = async () => {
     setStatsLoading(true);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Package, CheckCircle, AlertCircle, Clock } from "lucide-react";
 
 export default function SupplyStatusIndicator({
@@ -10,13 +10,7 @@ export default function SupplyStatusIndicator({
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (supplyId) {
-      fetchStatus();
-    }
-  }, [supplyId]);
-
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     try {
       const response = await fetch(
         `/api/supply-exports/status?supplyId=${supplyId}`
@@ -30,7 +24,13 @@ export default function SupplyStatusIndicator({
     } finally {
       setLoading(false);
     }
-  };
+  }, [supplyId]);
+
+  useEffect(() => {
+    if (supplyId) {
+      fetchStatus();
+    }
+  }, [supplyId, fetchStatus]);
 
   if (loading) {
     return (
