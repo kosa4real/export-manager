@@ -52,7 +52,7 @@ export default function LoginPage() {
               MB
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              MB & A Agro Commodities
+              MB & AY Agro Commodities
             </span>
           </div>
           <h1 className="text-3xl font-bold text-white">
@@ -164,7 +164,7 @@ export default function LoginPage() {
 
           <div className="mt-8 pt-6 border-t border-slate-800">
             <p className="text-center text-slate-400 text-sm">
-              © {new Date().getFullYear()} MB & A Agro Commodities Limited. All
+              © {new Date().getFullYear()} MB & AY Agro Commodities Limited. All
               rights reserved.
             </p>
           </div>
