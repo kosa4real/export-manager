@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import Sidebar from "./Sidebar";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
+import SessionTimeoutWarning from "./SessionTimeoutWarning";
+import SessionStatus from "./SessionStatus";
 
 const GlobalLayout = ({ children }) => {
   const { data: session, status } = useSession();
@@ -11,6 +14,15 @@ const GlobalLayout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Initialize auto logout functionality
+  const {
+    resetInactivityTimer,
+    showWarning,
+    timeRemaining,
+    extendSession,
+    logoutNow,
+  } = useAutoLogout();
 
   // Define routes where sidebar should NOT be shown
   const excludedRoutes = ["/", "/login"];
@@ -89,6 +101,9 @@ const GlobalLayout = ({ children }) => {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Session Status */}
+              <SessionStatus />
+
               {/* Notifications */}
               <button className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
                 <svg
@@ -172,6 +187,15 @@ const GlobalLayout = ({ children }) => {
         {/* Page Content */}
         <main className="p-6">{children}</main>
       </div>
+
+      {/* Session Timeout Warning Modal */}
+      {showWarning && (
+        <SessionTimeoutWarning
+          timeRemaining={timeRemaining}
+          onExtendSession={extendSession}
+          onLogout={logoutNow}
+        />
+      )}
     </div>
   );
 };
