@@ -204,7 +204,7 @@ export default function MBAAgroCommoditiesLanding() {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               Building Bridges in
               <span className="block bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
-                Trade, Construction & Agriculture
+                Trade, Construction, Transportation & Agriculture
               </span>
             </h1>
 
