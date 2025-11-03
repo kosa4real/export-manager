@@ -104,7 +104,7 @@ export default function MBAAgroCommoditiesLanding() {
                 MB
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                MB & A Agro Commodities Limited
+                MB & AY Agro Commodities Limited
               </span>
             </div>
 
@@ -209,7 +209,7 @@ export default function MBAAgroCommoditiesLanding() {
             </h1>
 
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              MB & A Agro Commodities Limited is your trusted partner in coal
+              MB & AY Agro Commodities Limited is your trusted partner in coal
               export, real estate development, agricultural innovation, and
               transportation solutions. We deliver excellence across four
               dynamic sectors.
@@ -287,7 +287,7 @@ export default function MBAAgroCommoditiesLanding() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Why Choose MB & A Agro Commodities Limited?
+                Why Choose MB & AYY Agro Commodities Limited?
               </h2>
               <p className="text-lg text-slate-300 mb-8">
                 With over 15 years of experience in international trade,
@@ -367,7 +367,7 @@ export default function MBAAgroCommoditiesLanding() {
             Ready to Work Together?
           </h2>
           <p className="text-xl text-slate-300 mb-10">
-            {"Let's"} discuss how MB & A Agro Commodities Limited can help you
+            {"Let's"} discuss how MB & AY Agro Commodities Limited can help you
             achieve your business goals
           </p>
 
@@ -392,7 +392,7 @@ export default function MBAAgroCommoditiesLanding() {
                   MB
                 </div>
                 <span className="text-xl font-bold">
-                  MB & A Agro Commodities Limited
+                  MB & AY Agro Commodities Limited
                 </span>
               </div>
               <p className="text-slate-400 text-sm">
@@ -494,7 +494,7 @@ export default function MBAAgroCommoditiesLanding() {
 
           <div className="border-t border-slate-800 pt-8 text-center text-slate-400 text-sm">
             <p>
-              &copy; 2025 MB & A Agro Commodities Limited. All rights reserved.
+              &copy; 2025 MB & AY Agro Commodities Limited. All rights reserved.
             </p>
           </div>
         </div>
