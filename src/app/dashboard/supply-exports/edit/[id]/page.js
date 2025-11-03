@@ -19,15 +19,6 @@ export default function EditSupplyExportPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  useEffect(() => {
-    if (
-      status === "authenticated" &&
-      ["ADMIN", "STAFF"].includes(session.user.role)
-    ) {
-      fetchSupplyExport();
-      fetchSupplies();
-      fetchExports();
-    }
   const fetchSupplyExport = useCallback(async () => {
     try {
       const response = await fetch(`/api/supply-exports/${params.id}`);
