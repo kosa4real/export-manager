@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "diagnose": "node scripts/diagnose-exports.js",
+    "fix-exports": "node scripts/fix-exports.js",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.17.0",
