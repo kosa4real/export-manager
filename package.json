@@ -10,7 +10,10 @@
     "diagnose": "node scripts/diagnose-exports.js",
     "fix-exports": "node scripts/fix-exports.js",
     "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "production:deploy": "./deploy-production.sh",
+    "production:check": "./check-production-env.sh",
+    "production:clean": "rm -rf .next node_modules/.prisma node_modules/@prisma/client"
   },
   "dependencies": {
     "@prisma/client": "^6.17.0",
@@ -32,7 +35,7 @@
     "@types/react": "19.2.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.1.16",
     "typescript": "5.9.3"
   }
 }
