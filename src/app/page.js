@@ -197,7 +197,7 @@ export default function MBAAgroCommoditiesLanding() {
             <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-2 mb-6">
               <Globe2 className="w-4 h-4 text-emerald-400" />
               <span className="text-sm text-emerald-400">
-                Connecting Nigeria to the World
+                Connecting MB & AY to the World
               </span>
             </div>
 
