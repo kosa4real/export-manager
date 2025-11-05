@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { SupplyExportValidator } from "@/lib/supply-export-validation";
@@ -20,45 +20,47 @@ export async function GET(request) {
   const exportId = searchParams.get("exportId");
 
   try {
-    const where = {
-      ...(supplyId ? { supplyId: parseInt(supplyId) } : {}),
-      ...(exportId ? { exportId: parseInt(exportId) } : {}),
-    };
+    return await withDb(async (prisma) => {
+      const where = {
+        ...(supplyId ? { supplyId: parseInt(supplyId) } : {}),
+        ...(exportId ? { exportId: parseInt(exportId) } : {}),
+      };
 
-    const [supplyExports, total] = await Promise.all([
-      prisma.supplyExport.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-        include: {
-          supply: {
-            select: {
-              id: true,
-              supplyDate: true,
-              supplier: { select: { name: true } },
+      const [supplyExports, total] = await Promise.all([
+        prisma.supplyExport.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { createdAt: "desc" },
+          include: {
+            supply: {
+              select: {
+                id: true,
+                supplyDate: true,
+                supplier: { select: { name: true } },
+              },
+            },
+            export: {
+              select: {
+                id: true,
+                exportDate: true,
+                destinationCountry: true,
+                destinationCity: true,
+                status: true,
+              },
             },
           },
-          export: {
-            select: {
-              id: true,
-              exportDate: true,
-              destinationCountry: true,
-              destinationCity: true,
-              status: true,
-            },
-          },
-        },
-      }),
-      prisma.supplyExport.count({ where }),
-    ]);
+        }),
+        prisma.supplyExport.count({ where }),
+      ]);
 
-    return NextResponse.json({
-      supplyExports,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      return NextResponse.json({
+        supplyExports,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      });
     });
   } catch (error) {
     console.error("Error fetching supply-exports:", error);
@@ -95,47 +97,49 @@ export async function POST(request) {
       parseInt(quantityBags)
     );
 
-    // Create the mapping
-    const supplyExport = await prisma.supplyExport.create({
-      data: {
-        supplyId: parseInt(supplyId),
-        exportId: parseInt(exportId),
-        quantityBags: parseInt(quantityBags),
-        notes: notes || null,
-        priority: priority ? parseInt(priority) : 0,
-      },
-      include: {
-        supply: {
-          select: {
-            id: true,
-            supplyDate: true,
-            quantityBags: true,
-            gradeA: true,
-            gradeB: true,
-            supplier: { select: { name: true } },
+    return await withDb(async (prisma) => {
+      // Create the mapping
+      const supplyExport = await prisma.supplyExport.create({
+        data: {
+          supplyId: parseInt(supplyId),
+          exportId: parseInt(exportId),
+          quantityBags: parseInt(quantityBags),
+          notes: notes || null,
+          priority: priority ? parseInt(priority) : 0,
+        },
+        include: {
+          supply: {
+            select: {
+              id: true,
+              supplyDate: true,
+              quantityBags: true,
+              gradeA: true,
+              gradeB: true,
+              supplier: { select: { name: true } },
+            },
+          },
+          export: {
+            select: {
+              id: true,
+              exportDate: true,
+              quantityBags: true,
+              destinationCountry: true,
+              destinationCity: true,
+              status: true,
+            },
           },
         },
-        export: {
-          select: {
-            id: true,
-            exportDate: true,
-            quantityBags: true,
-            destinationCountry: true,
-            destinationCity: true,
-            status: true,
-          },
-        },
-      },
-    });
+      });
 
-    return NextResponse.json(
-      {
-        supplyExport,
-        validation,
-        message: "Supply-export mapping created successfully",
-      },
-      { status: 201 }
-    );
+      return NextResponse.json(
+        {
+          supplyExport,
+          validation,
+          message: "Supply-export mapping created successfully",
+        },
+        { status: 201 }
+      );
+    });
   } catch (error) {
     console.error("Error creating supply-export:", error);
 

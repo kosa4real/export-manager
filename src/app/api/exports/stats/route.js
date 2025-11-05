@@ -1,26 +1,18 @@
-// app/api/exports/stats/route.js
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
 export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const isInvestor = session.user.role === "INVESTOR";
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isInvestor = session.user.role === "INVESTOR";
-
-    // Test database connection
-    await prisma.$connect();
-
-    console.log(
-      `[EXPORTS STATS] Fetching stats for user: ${session.user.email}, role: ${session.user.role}`
-    );
-
-    try {
+    return await withDb(async (prisma) => {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -114,10 +106,6 @@ export async function GET() {
           .then((res) => res._sum.netProfit || 0),
       ]);
 
-      console.log(
-        `[EXPORTS STATS] Successfully calculated stats: ${totalExports} total exports`
-      );
-
       return NextResponse.json({
         totalExports,
         exportsLast30Days,
@@ -129,27 +117,12 @@ export async function GET() {
         totalClearingFee: parseFloat(totalClearingFee.toFixed(2)),
         totalNetProfit: parseFloat(totalNetProfit.toFixed(2)),
       });
-    } catch (innerError) {
-      console.error("Inner exports stats error:", innerError);
-      return NextResponse.json(
-        {
-          error: "Failed to load export stats",
-          details: innerError.message,
-          code: innerError.code,
-        },
-        { status: 500 }
-      );
-    }
+    });
   } catch (error) {
-    console.error("Outer exports stats error:", error);
+    console.error("Exports stats error:", error);
     return NextResponse.json(
-      {
-        error: "Database connection failed",
-        details: error.message,
-      },
+      { error: "Failed to load export stats" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

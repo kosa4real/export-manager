@@ -1,6 +1,6 @@
 // app/api/supplies/route.js
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -22,41 +22,43 @@ export async function GET(request) {
   const isAdmin = session.user.role === "ADMIN";
 
   try {
-    const selectFields = {
-      id: true,
-      supplier: { select: { id: true, name: true } },
-      supplyDate: true,
-      quantityBags: true,
-      gradeA: true,
-      gradeB: true,
-      rejectedBags: true,
-      dustBags: true,
-      woodBags: true,
-      notes: true,
-      createdAt: true,
-      updatedAt: true,
-    };
+    return await withDb(async (prisma) => {
+      const selectFields = {
+        id: true,
+        supplier: { select: { id: true, name: true } },
+        supplyDate: true,
+        quantityBags: true,
+        gradeA: true,
+        gradeB: true,
+        rejectedBags: true,
+        dustBags: true,
+        woodBags: true,
+        notes: true,
+        createdAt: true,
+        updatedAt: true,
+      };
 
-    if (isAdmin) {
-      selectFields.unitPrice = true;
-      selectFields.amountPaid = true;
-      selectFields.balanceAmount = true;
-      selectFields.paymentStatus = true;
-    }
+      if (isAdmin) {
+        selectFields.unitPrice = true;
+        selectFields.amountPaid = true;
+        selectFields.balanceAmount = true;
+        selectFields.paymentStatus = true;
+      }
 
-    const supplies = await prisma.coalSupply.findMany({
-      where: supplierId ? { supplierId } : undefined,
-      skip,
-      take: limit,
-      orderBy: { supplyDate: "desc" },
-      select: selectFields,
+      const supplies = await prisma.coalSupply.findMany({
+        where: supplierId ? { supplierId } : undefined,
+        skip,
+        take: limit,
+        orderBy: { supplyDate: "desc" },
+        select: selectFields,
+      });
+
+      const total = await prisma.coalSupply.count({
+        where: supplierId ? { supplierId } : undefined,
+      });
+
+      return NextResponse.json({ supplies, total, page, limit });
     });
-
-    const total = await prisma.coalSupply.count({
-      where: supplierId ? { supplierId } : undefined,
-    });
-
-    return NextResponse.json({ supplies, total, page, limit });
   } catch (error) {
     console.error("Error fetching supplies:", error);
     return NextResponse.json(
@@ -88,69 +90,71 @@ export async function POST(request) {
       );
     }
 
-    // ✅ FIXED: Use coalSupplier (model name), not supplier
-    const supplierExists = await prisma.coalSupplier.findUnique({
-      where: { id: parseInt(data.supplierId, 10) },
+    return await withDb(async (prisma) => {
+      // ✅ FIXED: Use coalSupplier (model name), not supplier
+      const supplierExists = await prisma.coalSupplier.findUnique({
+        where: { id: parseInt(data.supplierId, 10) },
+      });
+
+      if (!supplierExists) {
+        return NextResponse.json(
+          { error: "Invalid supplier ID" },
+          { status: 400 }
+        );
+      }
+
+      const supplyData = {
+        supplierId: parseInt(data.supplierId, 10),
+        supplyDate: new Date(data.supplyDate),
+        quantityBags: parseInt(data.quantityBags, 10),
+        gradeA: data.gradeA != null ? parseInt(data.gradeA, 10) : 0,
+        gradeB: data.gradeB != null ? parseInt(data.gradeB, 10) : 0,
+        rejectedBags:
+          data.rejectedBags != null ? parseInt(data.rejectedBags, 10) : 0,
+        dustBags: data.dustBags != null ? parseInt(data.dustBags, 10) : 0,
+        woodBags: data.woodBags != null ? parseInt(data.woodBags, 10) : 0,
+        notes: data.notes || null,
+      };
+
+      if (isAdmin) {
+        supplyData.unitPrice =
+          typeof data.unitPrice === "number" ? data.unitPrice : 0;
+        supplyData.amountPaid =
+          typeof data.amountPaid === "number" ? data.amountPaid : 0;
+        supplyData.balanceAmount =
+          typeof data.balanceAmount === "number" ? data.balanceAmount : 0;
+        supplyData.paymentStatus = data.paymentStatus || "BALANCED";
+      }
+
+      const selectFields = {
+        id: true,
+        supplier: { select: { id: true, name: true } },
+        supplyDate: true,
+        quantityBags: true,
+        gradeA: true,
+        gradeB: true,
+        rejectedBags: true,
+        dustBags: true,
+        woodBags: true,
+        notes: true,
+        createdAt: true,
+        updatedAt: true,
+      };
+
+      if (isAdmin) {
+        selectFields.unitPrice = true;
+        selectFields.amountPaid = true;
+        selectFields.balanceAmount = true;
+        selectFields.paymentStatus = true;
+      }
+
+      const supply = await prisma.coalSupply.create({
+        data: supplyData,
+        select: selectFields,
+      });
+
+      return NextResponse.json(supply, { status: 201 });
     });
-
-    if (!supplierExists) {
-      return NextResponse.json(
-        { error: "Invalid supplier ID" },
-        { status: 400 }
-      );
-    }
-
-    const supplyData = {
-      supplierId: parseInt(data.supplierId, 10),
-      supplyDate: new Date(data.supplyDate),
-      quantityBags: parseInt(data.quantityBags, 10),
-      gradeA: data.gradeA != null ? parseInt(data.gradeA, 10) : 0,
-      gradeB: data.gradeB != null ? parseInt(data.gradeB, 10) : 0,
-      rejectedBags:
-        data.rejectedBags != null ? parseInt(data.rejectedBags, 10) : 0,
-      dustBags: data.dustBags != null ? parseInt(data.dustBags, 10) : 0,
-      woodBags: data.woodBags != null ? parseInt(data.woodBags, 10) : 0,
-      notes: data.notes || null,
-    };
-
-    if (isAdmin) {
-      supplyData.unitPrice =
-        typeof data.unitPrice === "number" ? data.unitPrice : 0;
-      supplyData.amountPaid =
-        typeof data.amountPaid === "number" ? data.amountPaid : 0;
-      supplyData.balanceAmount =
-        typeof data.balanceAmount === "number" ? data.balanceAmount : 0;
-      supplyData.paymentStatus = data.paymentStatus || "BALANCED";
-    }
-
-    const selectFields = {
-      id: true,
-      supplier: { select: { id: true, name: true } },
-      supplyDate: true,
-      quantityBags: true,
-      gradeA: true,
-      gradeB: true,
-      rejectedBags: true,
-      dustBags: true,
-      woodBags: true,
-      notes: true,
-      createdAt: true,
-      updatedAt: true,
-    };
-
-    if (isAdmin) {
-      selectFields.unitPrice = true;
-      selectFields.amountPaid = true;
-      selectFields.balanceAmount = true;
-      selectFields.paymentStatus = true;
-    }
-
-    const supply = await prisma.coalSupply.create({
-      data: supplyData,
-      select: selectFields,
-    });
-
-    return NextResponse.json(supply, { status: 201 });
   } catch (error) {
     console.error("Error creating supply:", error);
 

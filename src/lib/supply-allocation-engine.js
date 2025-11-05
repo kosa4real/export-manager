@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 
 /**
  * Smart allocation engine for optimal supply-export matching
@@ -15,60 +15,62 @@ export class SupplyAllocationEngine {
       minQuality = "ANY", // ANY, GRADE_A_ONLY, MIXED
     } = options;
 
-    const exportShipment = await prisma.exportShipment.findUnique({
-      where: { id: parseInt(exportId) },
-    });
+    return await withDb(async (prisma) => {
+      const exportShipment = await prisma.exportShipment.findUnique({
+        where: { id: parseInt(exportId) },
+      });
 
-    if (!exportShipment) {
-      throw new Error(`Export #${exportId} not found`);
-    }
+      if (!exportShipment) {
+        throw new Error(`Export #${exportId} not found`);
+      }
 
-    // Get current sourced quantity
-    const currentMappings = await prisma.supplyExport.aggregate({
-      where: { exportId: parseInt(exportId) },
-      _sum: { quantityBags: true },
-    });
+      // Get current sourced quantity
+      const currentMappings = await prisma.supplyExport.aggregate({
+        where: { exportId: parseInt(exportId) },
+        _sum: { quantityBags: true },
+      });
 
-    const alreadySourced = currentMappings._sum.quantityBags || 0;
-    const stillNeeded = exportShipment.quantityBags - alreadySourced;
+      const alreadySourced = currentMappings._sum.quantityBags || 0;
+      const stillNeeded = exportShipment.quantityBags - alreadySourced;
 
-    if (stillNeeded <= 0) {
+      if (stillNeeded <= 0) {
+        return {
+          exportId,
+          destination: `${exportShipment.destinationCity}, ${exportShipment.destinationCountry}`,
+          totalNeeded: exportShipment.quantityBags,
+          alreadySourced,
+          stillNeeded: 0,
+          fullySourced: true,
+          suggestions: [],
+        };
+      }
+
+      // Find available supplies
+      const availableSupplies = await this.getAvailableSupplies({
+        preferredSuppliers,
+        minQuality,
+        strategy,
+      });
+
+      // Generate suggestions based on strategy
+      const suggestions = this.generateSuggestions(
+        availableSupplies,
+        stillNeeded,
+        strategy,
+        maxSuggestions
+      );
+
       return {
         exportId,
         destination: `${exportShipment.destinationCity}, ${exportShipment.destinationCountry}`,
         totalNeeded: exportShipment.quantityBags,
         alreadySourced,
-        stillNeeded: 0,
-        fullySourced: true,
-        suggestions: [],
+        stillNeeded,
+        fullySourced: false,
+        strategy,
+        suggestions: suggestions.slice(0, maxSuggestions),
       };
-    }
-
-    // Find available supplies
-    const availableSupplies = await this.getAvailableSupplies({
-      preferredSuppliers,
-      minQuality,
-      strategy,
     });
-
-    // Generate suggestions based on strategy
-    const suggestions = this.generateSuggestions(
-      availableSupplies,
-      stillNeeded,
-      strategy,
-      maxSuggestions
-    );
-
-    return {
-      exportId,
-      destination: `${exportShipment.destinationCity}, ${exportShipment.destinationCountry}`,
-      totalNeeded: exportShipment.quantityBags,
-      alreadySourced,
-      stillNeeded,
-      fullySourced: false,
-      strategy,
-      suggestions: suggestions.slice(0, maxSuggestions),
-    };
   }
 
   /**
@@ -81,49 +83,51 @@ export class SupplyAllocationEngine {
       strategy = "OPTIMAL",
     } = options;
 
-    // Build where clause
-    const whereClause = {};
-    if (preferredSuppliers.length > 0) {
-      whereClause.supplierId = { in: preferredSuppliers };
-    }
+    return await withDb(async (prisma) => {
+      // Build where clause
+      const whereClause = {};
+      if (preferredSuppliers.length > 0) {
+        whereClause.supplierId = { in: preferredSuppliers };
+      }
 
-    // Quality filtering
-    if (minQuality === "GRADE_A_ONLY") {
-      whereClause.gradeA = { gt: 0 };
-    }
+      // Quality filtering
+      if (minQuality === "GRADE_A_ONLY") {
+        whereClause.gradeA = { gt: 0 };
+      }
 
-    const supplies = await prisma.coalSupply.findMany({
-      where: whereClause,
-      include: {
-        supplier: { select: { id: true, name: true } },
-        exports: { select: { quantityBags: true } },
-      },
-      orderBy: this.getOrderByClause(strategy),
+      const supplies = await prisma.coalSupply.findMany({
+        where: whereClause,
+        include: {
+          supplier: { select: { id: true, name: true } },
+          exports: { select: { quantityBags: true } },
+        },
+        orderBy: this.getOrderByClause(strategy),
+      });
+
+      // Calculate available quantities and filter out fully allocated supplies
+      return supplies
+        .map((supply) => {
+          const allocatedQuantity = supply.exports.reduce(
+            (sum, exp) => sum + exp.quantityBags,
+            0
+          );
+          const availableQuantity = supply.quantityBags - allocatedQuantity;
+
+          return {
+            ...supply,
+            allocatedQuantity,
+            availableQuantity,
+            utilizationPercentage:
+              (allocatedQuantity / supply.quantityBags) * 100,
+            qualityScore: this.calculateQualityScore(supply),
+            ageInDays: Math.floor(
+              (new Date() - new Date(supply.supplyDate)) / (1000 * 60 * 60 * 24)
+            ),
+          };
+        })
+        .filter((supply) => supply.availableQuantity > 0)
+        .sort((a, b) => this.compareSupplies(a, b, strategy));
     });
-
-    // Calculate available quantities and filter out fully allocated supplies
-    return supplies
-      .map((supply) => {
-        const allocatedQuantity = supply.exports.reduce(
-          (sum, exp) => sum + exp.quantityBags,
-          0
-        );
-        const availableQuantity = supply.quantityBags - allocatedQuantity;
-
-        return {
-          ...supply,
-          allocatedQuantity,
-          availableQuantity,
-          utilizationPercentage:
-            (allocatedQuantity / supply.quantityBags) * 100,
-          qualityScore: this.calculateQualityScore(supply),
-          ageInDays: Math.floor(
-            (new Date() - new Date(supply.supplyDate)) / (1000 * 60 * 60 * 24)
-          ),
-        };
-      })
-      .filter((supply) => supply.availableQuantity > 0)
-      .sort((a, b) => this.compareSupplies(a, b, strategy));
   }
 
   /**
@@ -181,76 +185,78 @@ export class SupplyAllocationEngine {
 
     const suggestions = await this.suggestAllocations(exportId, { strategy });
 
-    if (suggestions.fullySourced) {
-      return {
-        success: false,
-        message: "Export is already fully sourced",
-        allocations: [],
-      };
-    }
+    return await withDb(async (prisma) => {
+      if (suggestions.fullySourced) {
+        return {
+          success: false,
+          message: "Export is already fully sourced",
+          allocations: [],
+        };
+      }
 
-    const allocations = [];
-    const errors = [];
+      const allocations = [];
+      const errors = [];
 
-    for (const suggestion of suggestions.suggestions) {
-      try {
-        if (!dryRun) {
-          const allocation = await prisma.supplyExport.create({
-            data: {
+      for (const suggestion of suggestions.suggestions) {
+        try {
+          if (!dryRun) {
+            const allocation = await prisma.supplyExport.create({
+              data: {
+                supplyId: suggestion.supplyId,
+                exportId: parseInt(exportId),
+                quantityBags: suggestion.suggestedQuantity,
+                priority: suggestion.metrics.priority,
+                notes: `Auto-allocated using ${strategy} strategy: ${suggestion.recommendation}`,
+              },
+              include: {
+                supply: {
+                  select: {
+                    id: true,
+                    supplier: { select: { name: true } },
+                  },
+                },
+                export: {
+                  select: {
+                    id: true,
+                    destinationCity: true,
+                    destinationCountry: true,
+                  },
+                },
+              },
+            });
+            allocations.push(allocation);
+          } else {
+            allocations.push({
               supplyId: suggestion.supplyId,
               exportId: parseInt(exportId),
               quantityBags: suggestion.suggestedQuantity,
-              priority: suggestion.metrics.priority,
-              notes: `Auto-allocated using ${strategy} strategy: ${suggestion.recommendation}`,
-            },
-            include: {
-              supply: {
-                select: {
-                  id: true,
-                  supplier: { select: { name: true } },
-                },
-              },
-              export: {
-                select: {
-                  id: true,
-                  destinationCity: true,
-                  destinationCountry: true,
-                },
-              },
-            },
-          });
-          allocations.push(allocation);
-        } else {
-          allocations.push({
+              dryRun: true,
+            });
+          }
+        } catch (error) {
+          errors.push({
             supplyId: suggestion.supplyId,
-            exportId: parseInt(exportId),
-            quantityBags: suggestion.suggestedQuantity,
-            dryRun: true,
+            error: error.message,
           });
         }
-      } catch (error) {
-        errors.push({
-          supplyId: suggestion.supplyId,
-          error: error.message,
-        });
       }
-    }
 
-    return {
-      success: errors.length === 0,
-      strategy,
-      dryRun,
-      allocations,
-      errors,
-      summary: {
-        totalAllocations: allocations.length,
-        totalQuantity: allocations.reduce(
-          (sum, alloc) => sum + alloc.quantityBags,
-          0
-        ),
-        errors: errors.length,
-      },
-    };
+      return {
+        success: errors.length === 0,
+        strategy,
+        dryRun,
+        allocations,
+        errors,
+        summary: {
+          totalAllocations: allocations.length,
+          totalQuantity: allocations.reduce(
+            (sum, alloc) => sum + alloc.quantityBags,
+            0
+          ),
+          errors: errors.length,
+        },
+      };
+    });
   }
 
   /**

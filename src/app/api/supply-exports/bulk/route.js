@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { SupplyExportValidator } from "@/lib/supply-export-validation";
 
 // Bulk create supply-export mappings

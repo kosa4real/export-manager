@@ -1,6 +1,6 @@
 // app/api/suppliers/stats/route.js
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -11,28 +11,30 @@ export async function GET() {
   }
 
   try {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return await withDb(async (prisma) => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const [total, active, inactive, suspended, newLast30Days] =
-      await Promise.all([
-        prisma.coalSupplier.count(),
-        prisma.coalSupplier.count({ where: { status: "ACTIVE" } }),
-        prisma.coalSupplier.count({ where: { status: "INACTIVE" } }),
-        prisma.coalSupplier.count({ where: { status: "SUSPENDED" } }),
-        prisma.coalSupplier.count({
-          where: {
-            createdAt: { gte: thirtyDaysAgo },
-          },
-        }),
-      ]);
+      const [total, active, inactive, suspended, newLast30Days] =
+        await Promise.all([
+          prisma.coalSupplier.count(),
+          prisma.coalSupplier.count({ where: { status: "ACTIVE" } }),
+          prisma.coalSupplier.count({ where: { status: "INACTIVE" } }),
+          prisma.coalSupplier.count({ where: { status: "SUSPENDED" } }),
+          prisma.coalSupplier.count({
+            where: {
+              createdAt: { gte: thirtyDaysAgo },
+            },
+          }),
+        ]);
 
-    return NextResponse.json({
-      total,
-      active,
-      inactive,
-      suspended,
-      newLast30Days,
+      return NextResponse.json({
+        total,
+        active,
+        inactive,
+        suspended,
+        newLast30Days,
+      });
     });
   } catch (error) {
     console.error("Stats error:", error);

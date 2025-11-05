@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -64,19 +64,21 @@ export async function GET(request, { params }) {
       };
     }
 
-    const investor = await prisma.investor.findFirst({
-      where: whereClause,
-      select: buildSelectFields(isAdmin),
+    return await withDb(async (prisma) => {
+      const investor = await prisma.investor.findFirst({
+        where: whereClause,
+        select: buildSelectFields(isAdmin),
+      });
+
+      if (!investor) {
+        return NextResponse.json(
+          { error: "Investor not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(investor);
     });
-
-    if (!investor) {
-      return NextResponse.json(
-        { error: "Investor not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(investor);
   } catch (error) {
     console.error("GET investor error:", error);
     if (error.message === "Invalid ID") {

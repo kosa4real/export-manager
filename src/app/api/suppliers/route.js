@@ -1,6 +1,6 @@
 // app/api/suppliers/route.js
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -20,19 +20,21 @@ export async function GET(request) {
   const status = searchParams.get("status");
 
   try {
-    const suppliers = await prisma.coalSupplier.findMany({
-      where: status ? { status } : undefined,
-      skip,
-      take: limit,
-      orderBy: { name: "asc" },
-    });
+    return await withDb(async (prisma) => {
+      const suppliers = await prisma.coalSupplier.findMany({
+        where: status ? { status } : undefined,
+        skip,
+        take: limit,
+        orderBy: { name: "asc" },
+      });
 
-    // Optional: Also return total count for pagination
-    const total = await prisma.coalSupplier.count({
-      where: status ? { status } : undefined,
-    });
+      // Optional: Also return total count for pagination
+      const total = await prisma.coalSupplier.count({
+        where: status ? { status } : undefined,
+      });
 
-    return NextResponse.json({ suppliers, total, page, limit });
+      return NextResponse.json({ suppliers, total, page, limit });
+    });
   } catch (error) {
     console.error("Error fetching suppliers:", error);
     return NextResponse.json(
@@ -82,17 +84,19 @@ export async function POST(request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const supplier = await prisma.coalSupplier.create({
-      data: {
-        name: data.name.trim(),
-        contactInfo: data.contactInfo?.trim() || null,
-        email: data.email?.trim() || null,
-        fullAddress: data.fullAddress?.trim() || null,
-        status: data.status || "ACTIVE",
-      },
-    });
+    return await withDb(async (prisma) => {
+      const supplier = await prisma.coalSupplier.create({
+        data: {
+          name: data.name.trim(),
+          contactInfo: data.contactInfo?.trim() || null,
+          email: data.email?.trim() || null,
+          fullAddress: data.fullAddress?.trim() || null,
+          status: data.status || "ACTIVE",
+        },
+      });
 
-    return NextResponse.json(supplier, { status: 201 });
+      return NextResponse.json(supplier, { status: 201 });
+    });
   } catch (error) {
     console.error("Error creating supplier:", error);
 

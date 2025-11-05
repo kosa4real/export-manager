@@ -1,6 +1,6 @@
 // app/api/supplies/[id]/route.js
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -54,16 +54,21 @@ export async function GET(request, { params }) {
     const id = parseId(params.id);
     const isAdmin = session.user.role === "ADMIN";
 
-    const supply = await prisma.coalSupply.findUnique({
-      where: { id },
-      select: buildSelectFields(isAdmin),
+    return await withDb(async (prisma) => {
+      const supply = await prisma.coalSupply.findUnique({
+        where: { id },
+        select: buildSelectFields(isAdmin),
+      });
+
+      if (!supply) {
+        return NextResponse.json(
+          { error: "Supply not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(supply);
     });
-
-    if (!supply) {
-      return NextResponse.json({ error: "Supply not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(supply);
   } catch (error) {
     console.error("GET supply error:", error);
     if (error.message === "Invalid ID") {
@@ -85,78 +90,82 @@ export async function PUT(request, { params }) {
 
   try {
     const id = parseId(params.id);
-
-    // Check if supply exists
-    const existing = await prisma.coalSupply.findUnique({ where: { id } });
-    if (!existing) {
-      return NextResponse.json({ error: "Supply not found" }, { status: 404 });
-    }
-
     const data = await request.json();
     const isAdmin = session.user.role === "ADMIN";
 
-    // Validate required fields and supplierId if provided
-    if (data.supplierId != null) {
-      const supplierId = parseInt(data.supplierId, 10);
-      if (isNaN(supplierId)) {
+    return await withDb(async (prisma) => {
+      // Check if supply exists
+      const existing = await prisma.coalSupply.findUnique({ where: { id } });
+      if (!existing) {
         return NextResponse.json(
-          { error: "Invalid supplier ID format" },
-          { status: 400 }
+          { error: "Supply not found" },
+          { status: 404 }
         );
       }
-      const supplierExists = await prisma.coalSupplier.findUnique({
-        where: { id: supplierId },
+
+      // Validate required fields and supplierId if provided
+      if (data.supplierId != null) {
+        const supplierId = parseInt(data.supplierId, 10);
+        if (isNaN(supplierId)) {
+          return NextResponse.json(
+            { error: "Invalid supplier ID format" },
+            { status: 400 }
+          );
+        }
+        const supplierExists = await prisma.coalSupplier.findUnique({
+          where: { id: supplierId },
+        });
+        if (!supplierExists) {
+          return NextResponse.json(
+            { error: "Supplier not found" },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Build update payload
+      const updateData = {};
+
+      // Non-admin updatable fields
+      if (data.supplyDate != null)
+        updateData.supplyDate = new Date(data.supplyDate);
+      if (data.quantityBags != null)
+        updateData.quantityBags = parseInt(data.quantityBags, 10);
+      if (data.gradeA != null) updateData.gradeA = parseInt(data.gradeA, 10);
+      if (data.gradeB != null) updateData.gradeB = parseInt(data.gradeB, 10);
+      if (data.rejectedBags != null)
+        updateData.rejectedBags = parseInt(data.rejectedBags, 10);
+      if (data.dustBags != null)
+        updateData.dustBags = parseInt(data.dustBags, 10);
+      if (data.woodBags != null)
+        updateData.woodBags = parseInt(data.woodBags, 10);
+      if (data.notes != null) updateData.notes = data.notes;
+
+      // Supplier ID
+      if (data.supplierId != null) {
+        updateData.supplierId = parseInt(data.supplierId, 10);
+      }
+
+      // Admin-only fields
+      if (isAdmin) {
+        if (data.unitPrice != null)
+          updateData.unitPrice = parseFloat(data.unitPrice);
+        if (data.amountPaid != null)
+          updateData.amountPaid = parseFloat(data.amountPaid);
+        if (data.balanceAmount != null)
+          updateData.balanceAmount = parseFloat(data.balanceAmount);
+        if (data.paymentStatus != null)
+          updateData.paymentStatus = data.paymentStatus;
+      }
+
+      const updated = await prisma.coalSupply.update({
+        where: { id },
+        data: updateData,
+        select: buildSelectFields(isAdmin),
       });
-      if (!supplierExists) {
-        return NextResponse.json(
-          { error: "Supplier not found" },
-          { status: 400 }
-        );
-      }
-    }
 
-    // Build update payload
-    const updateData = {};
-
-    // Non-admin updatable fields
-    if (data.supplyDate != null)
-      updateData.supplyDate = new Date(data.supplyDate);
-    if (data.quantityBags != null)
-      updateData.quantityBags = parseInt(data.quantityBags, 10);
-    if (data.gradeA != null) updateData.gradeA = parseInt(data.gradeA, 10);
-    if (data.gradeB != null) updateData.gradeB = parseInt(data.gradeB, 10);
-    if (data.rejectedBags != null)
-      updateData.rejectedBags = parseInt(data.rejectedBags, 10);
-    if (data.dustBags != null)
-      updateData.dustBags = parseInt(data.dustBags, 10);
-    if (data.woodBags != null)
-      updateData.woodBags = parseInt(data.woodBags, 10);
-    if (data.notes != null) updateData.notes = data.notes;
-
-    // Supplier ID
-    if (data.supplierId != null) {
-      updateData.supplierId = parseInt(data.supplierId, 10);
-    }
-
-    // Admin-only fields
-    if (isAdmin) {
-      if (data.unitPrice != null)
-        updateData.unitPrice = parseFloat(data.unitPrice);
-      if (data.amountPaid != null)
-        updateData.amountPaid = parseFloat(data.amountPaid);
-      if (data.balanceAmount != null)
-        updateData.balanceAmount = parseFloat(data.balanceAmount);
-      if (data.paymentStatus != null)
-        updateData.paymentStatus = data.paymentStatus;
-    }
-
-    const updated = await prisma.coalSupply.update({
-      where: { id },
-      data: updateData,
-      select: buildSelectFields(isAdmin),
+      return NextResponse.json(updated);
     });
-
-    return NextResponse.json(updated);
   } catch (error) {
     console.error("PUT supply error:", error);
 
@@ -200,17 +209,22 @@ export async function DELETE(request, { params }) {
   try {
     const id = parseId(params.id);
 
-    // Check existence first (optional but user-friendly)
-    const existing = await prisma.coalSupply.findUnique({ where: { id } });
-    if (!existing) {
-      return NextResponse.json({ error: "Supply not found" }, { status: 404 });
-    }
+    return await withDb(async (prisma) => {
+      // Check existence first (optional but user-friendly)
+      const existing = await prisma.coalSupply.findUnique({ where: { id } });
+      if (!existing) {
+        return NextResponse.json(
+          { error: "Supply not found" },
+          { status: 404 }
+        );
+      }
 
-    await prisma.coalSupply.delete({
-      where: { id },
+      await prisma.coalSupply.delete({
+        where: { id },
+      });
+
+      return NextResponse.json({ message: "Supply deleted successfully" });
     });
-
-    return NextResponse.json({ message: "Supply deleted successfully" });
   } catch (error) {
     console.error("DELETE supply error:", error);
 

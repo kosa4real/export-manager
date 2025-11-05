@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // ✅ Use your singleton client
+import { withDb } from "@/lib/db"; // ✅ Use your singleton client
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 

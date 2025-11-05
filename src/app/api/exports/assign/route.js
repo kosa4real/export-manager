@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
 // POST /api/exports/assign - Assign export to investor
 export async function POST(request) {
   const session = await getServerSession(authOptions);
-
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json(
       { error: "Access denied: Admin only" },
@@ -24,54 +23,59 @@ export async function POST(request) {
       );
     }
 
-    // Verify export exists
-    const exportExists = await prisma.exportShipment.findUnique({
-      where: { id: parseInt(exportId) },
-    });
+    return await withDb(async (prisma) => {
+      // Verify export exists
+      const exportExists = await prisma.exportShipment.findUnique({
+        where: { id: parseInt(exportId) },
+      });
 
-    if (!exportExists) {
-      return NextResponse.json({ error: "Export not found" }, { status: 404 });
-    }
+      if (!exportExists) {
+        return NextResponse.json(
+          { error: "Export not found" },
+          { status: 404 }
+        );
+      }
 
-    // Verify investor exists
-    const investorExists = await prisma.investor.findUnique({
-      where: { id: parseInt(investorId) },
-    });
+      // Verify investor exists
+      const investorExists = await prisma.investor.findUnique({
+        where: { id: parseInt(investorId) },
+      });
 
-    if (!investorExists) {
-      return NextResponse.json(
-        { error: "Investor not found" },
-        { status: 404 }
-      );
-    }
+      if (!investorExists) {
+        return NextResponse.json(
+          { error: "Investor not found" },
+          { status: 404 }
+        );
+      }
 
-    // Update export with investor assignment
-    const updatedExport = await prisma.exportShipment.update({
-      where: { id: parseInt(exportId) },
-      data: { assignedInvestorId: parseInt(investorId) },
-      select: {
-        id: true,
-        exportDate: true,
-        quantityBags: true,
-        destinationCountry: true,
-        destinationCity: true,
-        status: true,
-        assignedInvestorId: true,
-        assignedInvestor: {
-          select: {
-            id: true,
-            name: true,
-            profitShare: true,
-            containerEquivalent: true,
+      // Update export with investor assignment
+      const updatedExport = await prisma.exportShipment.update({
+        where: { id: parseInt(exportId) },
+        data: { assignedInvestorId: parseInt(investorId) },
+        select: {
+          id: true,
+          exportDate: true,
+          quantityBags: true,
+          destinationCountry: true,
+          destinationCity: true,
+          status: true,
+          assignedInvestorId: true,
+          assignedInvestor: {
+            select: {
+              id: true,
+              name: true,
+              profitShare: true,
+              containerEquivalent: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return NextResponse.json({
-      success: true,
-      export: updatedExport,
-      message: `Export #${exportId} assigned to ${investorExists.name}`,
+      return NextResponse.json({
+        success: true,
+        export: updatedExport,
+        message: `Export #${exportId} assigned to ${investorExists.name}`,
+      });
     });
   } catch (error) {
     console.error("Error assigning export:", error);
@@ -85,7 +89,6 @@ export async function POST(request) {
 // DELETE /api/exports/assign - Remove investor assignment from export
 export async function DELETE(request) {
   const session = await getServerSession(authOptions);
-
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json(
       { error: "Access denied: Admin only" },
@@ -104,25 +107,27 @@ export async function DELETE(request) {
       );
     }
 
-    // Update export to remove investor assignment
-    const updatedExport = await prisma.exportShipment.update({
-      where: { id: parseInt(exportId) },
-      data: { assignedInvestorId: null },
-      select: {
-        id: true,
-        exportDate: true,
-        quantityBags: true,
-        destinationCountry: true,
-        destinationCity: true,
-        status: true,
-        assignedInvestorId: true,
-      },
-    });
+    return await withDb(async (prisma) => {
+      // Update export to remove investor assignment
+      const updatedExport = await prisma.exportShipment.update({
+        where: { id: parseInt(exportId) },
+        data: { assignedInvestorId: null },
+        select: {
+          id: true,
+          exportDate: true,
+          quantityBags: true,
+          destinationCountry: true,
+          destinationCity: true,
+          status: true,
+          assignedInvestorId: true,
+        },
+      });
 
-    return NextResponse.json({
-      success: true,
-      export: updatedExport,
-      message: `Investor assignment removed from Export #${exportId}`,
+      return NextResponse.json({
+        success: true,
+        export: updatedExport,
+        message: `Investor assignment removed from Export #${exportId}`,
+      });
     });
   } catch (error) {
     console.error("Error removing assignment:", error);

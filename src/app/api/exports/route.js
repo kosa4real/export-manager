@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { withDb } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -23,8 +23,6 @@ export async function GET(request) {
     const isAdmin = session.user.role === "ADMIN";
     const isInvestor = session.user.role === "INVESTOR";
 
-    // Test database connection first
-    await prisma.$connect();
 
     console.log(
       `[EXPORTS API] Fetching exports for user: ${session.user.email}, role: ${session.user.role}`
@@ -164,7 +162,6 @@ export async function GET(request) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -177,8 +174,6 @@ export async function POST(request) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    // Test database connection
-    await prisma.$connect();
 
     console.log(
       `[EXPORTS API] Creating new export by user: ${session.user.email}`
@@ -322,6 +317,5 @@ export async function POST(request) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
   }
 }
