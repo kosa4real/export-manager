@@ -4,7 +4,25 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UserManagementModal from "@/components/UserManagementModal";
-import { Users, UserPlus, Shield, Eye, Edit, Trash2 } from "lucide-react";
+import UserProfile from "@/components/UserProfile";
+import BulkUserActions from "@/components/BulkUserActions";
+import {
+  exportUsersToCSV,
+  downloadCSV,
+  exportUsersToJSON,
+  downloadJSON,
+} from "@/lib/user-export";
+import {
+  Users,
+  UserPlus,
+  Shield,
+  Edit,
+  Trash2,
+  Eye,
+  CheckSquare,
+  Square,
+  Download,
+} from "lucide-react";
 
 const UsersPage = () => {
   const { data: session, status } = useSession();
@@ -16,6 +34,9 @@ const UsersPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [profileUserId, setProfileUserId] = useState(null);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   // Pagination and filtering
   const [currentPage, setCurrentPage] = useState(1);
@@ -80,7 +101,7 @@ const UsersPage = () => {
     }
   }, [session, fetchUsers]);
 
-  const handleUserSaved = (savedUser) => {
+  const handleUserSaved = () => {
     fetchUsers(); // Refresh the list
   };
 
@@ -120,6 +141,57 @@ const UsersPage = () => {
   const handleAddUser = () => {
     setEditingUser(null);
     setShowModal(true);
+  };
+
+  const handleViewProfile = (userId) => {
+    setProfileUserId(userId);
+    setShowProfile(true);
+  };
+
+  const handleBulkAction = async (action, userIds) => {
+    try {
+      if (action === "delete") {
+        // Delete multiple users
+        const deletePromises = userIds.map((userId) =>
+          fetch(`/api/users/${userId}`, { method: "DELETE" })
+        );
+        await Promise.all(deletePromises);
+        fetchUsers();
+        setError("");
+      } else if (action === "deactivate") {
+        // This would require implementing user deactivation
+        console.log("Deactivate users:", userIds);
+        // For now, just show a message
+        setError("Bulk deactivation not yet implemented");
+      }
+    } catch (err) {
+      setError(`Failed to ${action} users`);
+    }
+  };
+
+  const handleUserSelection = (userIds) => {
+    setSelectedUsers(userIds);
+  };
+
+  const toggleUserSelection = (userId) => {
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const handleExport = (format) => {
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `users-export-${timestamp}`;
+
+    if (format === "csv") {
+      const csvContent = exportUsersToCSV(users);
+      downloadCSV(csvContent, `${filename}.csv`);
+    } else if (format === "json") {
+      const jsonContent = exportUsersToJSON(users);
+      downloadJSON(jsonContent, `${filename}.json`);
+    }
   };
 
   const getRoleBadgeColor = (role) => {
@@ -164,13 +236,36 @@ const UsersPage = () => {
                 Manage system users and their permissions
               </p>
             </div>
-            <button
-              onClick={handleAddUser}
-              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg font-medium text-white hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-emerald-500/30 hover:scale-105"
-            >
-              <UserPlus className="w-5 h-5 mr-2" />
-              Add User
-            </button>
+            <div className="flex gap-3">
+              <div className="relative group">
+                <button className="inline-flex items-center justify-center px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium text-white transition-all duration-300">
+                  <Download className="w-5 h-5 mr-2" />
+                  Export
+                </button>
+                <div className="absolute right-0 top-full mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                  <button
+                    onClick={() => handleExport("csv")}
+                    className="w-full text-left px-4 py-3 text-white hover:bg-slate-700 transition-colors rounded-t-lg"
+                  >
+                    Export as CSV
+                  </button>
+                  <button
+                    onClick={() => handleExport("json")}
+                    className="w-full text-left px-4 py-3 text-white hover:bg-slate-700 transition-colors rounded-b-lg"
+                  >
+                    Export as JSON
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={handleAddUser}
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg font-medium text-white hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-emerald-500/30 hover:scale-105"
+              >
+                <UserPlus className="w-5 h-5 mr-2" />
+                Add User
+              </button>
+            </div>
           </div>
         </div>
 
@@ -191,6 +286,14 @@ const UsersPage = () => {
             <span>{error}</span>
           </div>
         )}
+
+        {/* Bulk Actions */}
+        <BulkUserActions
+          users={users}
+          selectedUsers={selectedUsers}
+          onSelectionChange={handleUserSelection}
+          onBulkAction={handleBulkAction}
+        />
 
         {/* Filters */}
         <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-xl p-6 mb-6">
@@ -271,6 +374,24 @@ const UsersPage = () => {
               <table className="w-full">
                 <thead className="bg-slate-800/80 border-b border-slate-700">
                   <tr>
+                    <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider w-12">
+                      <button
+                        onClick={() =>
+                          handleUserSelection(
+                            selectedUsers.length === users.length
+                              ? []
+                              : users.map((u) => u.id)
+                          )
+                        }
+                        className="text-slate-400 hover:text-white transition-colors"
+                      >
+                        {selectedUsers.length === users.length ? (
+                          <CheckSquare className="w-4 h-4" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </button>
+                    </th>
                     <th className="text-left p-4 font-semibold text-slate-200 text-sm uppercase tracking-wider">
                       User Details
                     </th>
@@ -292,8 +413,22 @@ const UsersPage = () => {
                   {users.map((user) => (
                     <tr
                       key={user.id}
-                      className="hover:bg-slate-800/50 transition-colors duration-150"
+                      className={`hover:bg-slate-800/50 transition-colors duration-150 ${
+                        selectedUsers.includes(user.id) ? "bg-slate-800/30" : ""
+                      }`}
                     >
+                      <td className="p-4 whitespace-nowrap">
+                        <button
+                          onClick={() => toggleUserSelection(user.id)}
+                          className="text-slate-400 hover:text-white transition-colors"
+                        >
+                          {selectedUsers.includes(user.id) ? (
+                            <CheckSquare className="w-4 h-4 text-emerald-400" />
+                          ) : (
+                            <Square className="w-4 h-4" />
+                          )}
+                        </button>
+                      </td>
                       <td className="p-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
@@ -342,6 +477,13 @@ const UsersPage = () => {
                       </td>
                       <td className="p-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end items-center gap-2">
+                          <button
+                            onClick={() => handleViewProfile(user.id)}
+                            className="text-blue-400 hover:text-blue-300 p-2 rounded-lg hover:bg-slate-800/60 transition-all duration-150"
+                            title="View profile"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
                           <button
                             onClick={() => handleEdit(user)}
                             className="text-emerald-400 hover:text-emerald-300 p-2 rounded-lg hover:bg-slate-800/60 transition-all duration-150"
@@ -422,6 +564,14 @@ const UsersPage = () => {
           onUserSaved={handleUserSaved}
           investors={investors}
         />
+
+        {/* User Profile Modal */}
+        {showProfile && (
+          <UserProfile
+            userId={profileUserId}
+            onClose={() => setShowProfile(false)}
+          />
+        )}
       </div>
     </div>
   );
