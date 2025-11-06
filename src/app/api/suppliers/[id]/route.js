@@ -20,7 +20,8 @@ export async function GET(request, { params }) {
   }
 
   try {
-    const id = parseId(params.id);
+    const { id: idParam } = await params; // ✅ Await params first
+    const id = parseId(idParam);
 
     const supplier = await prisma.coalSupplier.findUnique({
       where: { id },
@@ -57,7 +58,8 @@ export async function PUT(request, { params }) {
   }
 
   try {
-    const id = parseId(params.id);
+    const { id: idParam } = await params; // ✅ Await params first
+    const id = parseId(idParam);
     const data = await request.json();
 
     // Validate required field
@@ -122,7 +124,8 @@ export async function DELETE(request, { params }) {
   }
 
   try {
-    const id = parseId(params.id);
+    const { id: idParam } = await params; // ✅ Await params first
+    const id = parseId(idParam);
 
     // Check existence first (optional but user-friendly)
     const existing = await prisma.coalSupplier.findUnique({ where: { id } });
