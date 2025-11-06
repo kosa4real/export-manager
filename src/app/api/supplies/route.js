@@ -1,6 +1,6 @@
 // app/api/supplies/route.js
 import { NextResponse } from "next/server";
-import { withDb } from "@/lib/db";
+import { withDb, prisma } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { withDb } from "@/lib/db"; // ✅ Use your singleton client
+import { withDb, prisma } from "@/lib/db"; // ✅ Use your singleton client
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
@@ -23,18 +23,20 @@ export async function GET(request, { params }) {
     const { id: idParam } = await params; // ✅ Await params first
     const id = parseId(idParam);
 
-    const supplier = await prisma.coalSupplier.findUnique({
-      where: { id },
+    return await withDb(async (prisma) => {
+      const supplier = await prisma.coalSupplier.findUnique({
+        where: { id },
+      });
+
+      if (!supplier) {
+        return NextResponse.json(
+          { error: "Supplier not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(supplier);
     });
-
-    if (!supplier) {
-      return NextResponse.json(
-        { error: "Supplier not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(supplier);
   } catch (error) {
     console.error("GET supplier error:", error);
     if (error.message === "Invalid ID") {
@@ -67,27 +69,29 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    // Check if supplier exists
-    const existing = await prisma.coalSupplier.findUnique({ where: { id } });
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Supplier not found" },
-        { status: 404 }
-      );
-    }
+    return await withDb(async (prisma) => {
+      // Check if supplier exists
+      const existing = await prisma.coalSupplier.findUnique({ where: { id } });
+      if (!existing) {
+        return NextResponse.json(
+          { error: "Supplier not found" },
+          { status: 404 }
+        );
+      }
 
-    const updated = await prisma.coalSupplier.update({
-      where: { id },
-      data: {
-        name: data.name.trim(),
-        contactInfo: data.contactInfo?.trim() || null,
-        email: data.email?.trim() || null,
-        fullAddress: data.fullAddress?.trim() || null,
-        status: data.status || existing.status,
-      },
+      const updated = await prisma.coalSupplier.update({
+        where: { id },
+        data: {
+          name: data.name.trim(),
+          contactInfo: data.contactInfo?.trim() || null,
+          email: data.email?.trim() || null,
+          fullAddress: data.fullAddress?.trim() || null,
+          status: data.status || existing.status,
+        },
+      });
+
+      return NextResponse.json(updated);
     });
-
-    return NextResponse.json(updated);
   } catch (error) {
     console.error("PUT supplier error:", error);
 
@@ -127,20 +131,22 @@ export async function DELETE(request, { params }) {
     const { id: idParam } = await params; // ✅ Await params first
     const id = parseId(idParam);
 
-    // Check existence first (optional but user-friendly)
-    const existing = await prisma.coalSupplier.findUnique({ where: { id } });
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Supplier not found" },
-        { status: 404 }
-      );
-    }
+    return await withDb(async (prisma) => {
+      // Check existence first (optional but user-friendly)
+      const existing = await prisma.coalSupplier.findUnique({ where: { id } });
+      if (!existing) {
+        return NextResponse.json(
+          { error: "Supplier not found" },
+          { status: 404 }
+        );
+      }
 
-    await prisma.coalSupplier.delete({
-      where: { id },
+      await prisma.coalSupplier.delete({
+        where: { id },
+      });
+
+      return NextResponse.json({ message: "Supplier deleted successfully" });
     });
-
-    return NextResponse.json({ message: "Supplier deleted successfully" });
   } catch (error) {
     console.error("DELETE supplier error:", error);
 

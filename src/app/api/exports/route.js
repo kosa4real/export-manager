@@ -1,34 +1,33 @@
 import { NextResponse } from "next/server";
-import { withDb } from "@/lib/db";
+import { withDb, prisma } from "@/lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 
 // GET /api/exports — Fetch paginated export shipments
 export async function GET(request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+  const limit = Math.min(
+    100,
+    Math.max(1, parseInt(searchParams.get("limit") || "10"))
+  );
+  const skip = (page - 1) * limit;
+  const destinationCountry = searchParams.get("destinationCountry");
+  const status = searchParams.get("status");
+  const isAdmin = session.user.role === "ADMIN";
+  const isInvestor = session.user.role === "INVESTOR";
+
+  console.log(
+    `[EXPORTS API] Fetching exports for user: ${session.user.email}, role: ${session.user.role}`
+  );
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
-    const limit = Math.min(
-      100,
-      Math.max(1, parseInt(searchParams.get("limit") || "10"))
-    );
-    const skip = (page - 1) * limit;
-    const destinationCountry = searchParams.get("destinationCountry");
-    const status = searchParams.get("status");
-    const isAdmin = session.user.role === "ADMIN";
-    const isInvestor = session.user.role === "INVESTOR";
-
-
-    console.log(
-      `[EXPORTS API] Fetching exports for user: ${session.user.email}, role: ${session.user.role}`
-    );
-
-    try {
+    return await withDb(async (prisma) => {
       const where = {};
       if (destinationCountry) {
         where.destinationCountry = destinationCountry;
@@ -141,149 +140,145 @@ export async function GET(request) {
         limit,
         totalPages: Math.ceil(total / limit),
       });
-    } catch (innerError) {
-      console.error("Inner error fetching exports:", innerError);
-      return NextResponse.json(
-        {
-          error: "Failed to fetch exports",
-          details: innerError.message,
-          code: innerError.code,
-        },
-        { status: 500 }
-      );
-    }
+    });
   } catch (error) {
-    console.error("Outer error in exports API:", error);
+    console.error("Error in exports API:", error);
     return NextResponse.json(
       {
-        error: "Database connection failed",
+        error: "Failed to fetch exports",
         details: error.message,
+        code: error.code,
       },
       { status: 500 }
     );
-  } finally {
   }
 }
 
 // POST /api/exports — Create new export shipment
 export async function POST(request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !["ADMIN", "STAFF"].includes(session.user.role)) {
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  }
+
+  console.log(
+    `[EXPORTS API] Creating new export by user: ${session.user.email}`
+  );
+
   try {
-    const session = await getServerSession(authOptions);
+    return await withDb(async (prisma) => {
+      const data = await request.json();
+      const isAdmin = session.user.role === "ADMIN";
 
-    if (!session || !["ADMIN", "STAFF"].includes(session.user.role)) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-
-
-    console.log(
-      `[EXPORTS API] Creating new export by user: ${session.user.email}`
-    );
-
-    const data = await request.json();
-    const isAdmin = session.user.role === "ADMIN";
-
-    // ✅ Validate required fields
-    if (!data.exportDate || !data.quantityBags || !data.departureDate) {
-      return NextResponse.json(
-        {
-          error:
-            "Missing required fields: exportDate, quantityBags, departureDate",
-        },
-        { status: 400 }
-      );
-    }
-
-    // ✅ VALIDATE AGAINST ACTUAL PRISMA ENUM
-    const VALID_STATUSES = ["PENDING", "IN_TRANSIT", "DELIVERED", "CANCELLED"];
-    let statusValue = "PENDING"; // default
-
-    if (data.status) {
-      const upperStatus = data.status.trim().toUpperCase();
-      if (VALID_STATUSES.includes(upperStatus)) {
-        statusValue = upperStatus;
-      } else {
-        console.warn(
-          `Invalid status received: "${data.status}". Using default "PENDING".`
+      // ✅ Validate required fields
+      if (!data.exportDate || !data.quantityBags || !data.departureDate) {
+        return NextResponse.json(
+          {
+            error:
+              "Missing required fields: exportDate, quantityBags, departureDate",
+          },
+          { status: 400 }
         );
       }
-    }
 
-    const exportData = {
-      exportDate: new Date(data.exportDate),
-      quantityBags: parseInt(data.quantityBags, 10),
-      departureDate: new Date(data.departureDate),
-      arrivalDate: data.arrivalDate ? new Date(data.arrivalDate) : null,
-      destinationCountry: data.destinationCountry || "",
-      destinationCity: data.destinationCity || "",
-      departureClearingAgent: data.departureClearingAgent || null,
-      departureClearingFee: data.departureClearingFee
-        ? parseFloat(data.departureClearingFee)
-        : null,
-      arrivalClearingAgent: data.arrivalClearingAgent || null,
-      arrivalClearingFee: data.arrivalClearingFee
-        ? parseFloat(data.arrivalClearingFee)
-        : null,
-      buyer: data.buyer || null,
-      containerNumber: data.containerNumber || null,
-      status: statusValue, // ✅ Now guaranteed to be a valid enum value
-      notes: data.notes || null,
-      assignedInvestorId: data.assignedInvestorId
-        ? parseInt(data.assignedInvestorId)
-        : null,
-    };
+      // ✅ VALIDATE AGAINST ACTUAL PRISMA ENUM
+      const VALID_STATUSES = [
+        "PENDING",
+        "IN_TRANSIT",
+        "DELIVERED",
+        "CANCELLED",
+      ];
+      let statusValue = "PENDING"; // default
 
-    // ✅ Admin-only financial fields
-    if (isAdmin) {
-      if (data.amountReceived !== undefined && data.amountReceived !== null) {
-        exportData.amountReceived = parseFloat(data.amountReceived);
+      if (data.status) {
+        const upperStatus = data.status.trim().toUpperCase();
+        if (VALID_STATUSES.includes(upperStatus)) {
+          statusValue = upperStatus;
+        } else {
+          console.warn(
+            `Invalid status received: "${data.status}". Using default "PENDING".`
+          );
+        }
       }
-      if (data.netProfit !== undefined && data.netProfit !== null) {
-        exportData.netProfit = parseFloat(data.netProfit);
-      }
-    }
 
-    const newExport = await prisma.exportShipment.create({
-      data: exportData,
-      select: {
-        id: true,
-        exportDate: true,
-        quantityBags: true,
-        departureDate: true,
-        arrivalDate: true,
-        destinationCountry: true,
-        destinationCity: true,
-        departureClearingAgent: true,
-        departureClearingFee: true,
-        arrivalClearingAgent: true,
-        arrivalClearingFee: true,
-        clearingAgent: true, // Keep for backward compatibility
-        buyer: true,
-        containerNumber: true,
-        status: true,
-        notes: true,
-        assignedInvestorId: true,
-        assignedInvestor: {
-          select: {
-            id: true,
-            name: true,
-            profitShare: true,
+      const exportData = {
+        exportDate: new Date(data.exportDate),
+        quantityBags: parseInt(data.quantityBags, 10),
+        departureDate: new Date(data.departureDate),
+        arrivalDate: data.arrivalDate ? new Date(data.arrivalDate) : null,
+        destinationCountry: data.destinationCountry || "",
+        destinationCity: data.destinationCity || "",
+        departureClearingAgent: data.departureClearingAgent || null,
+        departureClearingFee: data.departureClearingFee
+          ? parseFloat(data.departureClearingFee)
+          : null,
+        arrivalClearingAgent: data.arrivalClearingAgent || null,
+        arrivalClearingFee: data.arrivalClearingFee
+          ? parseFloat(data.arrivalClearingFee)
+          : null,
+        buyer: data.buyer || null,
+        containerNumber: data.containerNumber || null,
+        status: statusValue, // ✅ Now guaranteed to be a valid enum value
+        notes: data.notes || null,
+        assignedInvestorId: data.assignedInvestorId
+          ? parseInt(data.assignedInvestorId)
+          : null,
+      };
+
+      // ✅ Admin-only financial fields
+      if (isAdmin) {
+        if (data.amountReceived !== undefined && data.amountReceived !== null) {
+          exportData.amountReceived = parseFloat(data.amountReceived);
+        }
+        if (data.netProfit !== undefined && data.netProfit !== null) {
+          exportData.netProfit = parseFloat(data.netProfit);
+        }
+      }
+
+      const newExport = await prisma.exportShipment.create({
+        data: exportData,
+        select: {
+          id: true,
+          exportDate: true,
+          quantityBags: true,
+          departureDate: true,
+          arrivalDate: true,
+          destinationCountry: true,
+          destinationCity: true,
+          departureClearingAgent: true,
+          departureClearingFee: true,
+          arrivalClearingAgent: true,
+          arrivalClearingFee: true,
+          clearingAgent: true, // Keep for backward compatibility
+          buyer: true,
+          containerNumber: true,
+          status: true,
+          notes: true,
+          assignedInvestorId: true,
+          assignedInvestor: {
+            select: {
+              id: true,
+              name: true,
+              profitShare: true,
+            },
           },
+          createdAt: true,
+          updatedAt: true,
+          ...(isAdmin && {
+            amountReceived: true,
+            clearingFee: true, // Keep for backward compatibility
+            netProfit: true,
+          }),
         },
-        createdAt: true,
-        updatedAt: true,
-        ...(isAdmin && {
-          amountReceived: true,
-          clearingFee: true, // Keep for backward compatibility
-          netProfit: true,
-        }),
-      },
+      });
+
+      console.log(
+        `[EXPORTS API] Successfully created export with ID: ${newExport.id}`
+      );
+
+      return NextResponse.json(newExport, { status: 201 });
     });
-
-    console.log(
-      `[EXPORTS API] Successfully created export with ID: ${newExport.id}`
-    );
-
-    return NextResponse.json(newExport, { status: 201 });
   } catch (error) {
     console.error("Error creating export:", error);
 
@@ -316,6 +311,5 @@ export async function POST(request) {
       },
       { status: 500 }
     );
-  } finally {
   }
 }
