@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Dan Enterprises - Coal Management System",
+  title: "MB & AY Agro Commodities - Coal Management System",
   description:
-    "Comprehensive coal supply chain management system for Dan Enterprises",
+    "Comprehensive coal supply chain management system for MB & AY Agro Commodities",
 };
 
 export default function RootLayout({ children }) {
