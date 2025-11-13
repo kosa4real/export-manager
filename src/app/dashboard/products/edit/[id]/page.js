@@ -29,45 +29,6 @@ export default function EditSupplyPage({ params }) {
   const [error, setError] = useState("");
   const [isCalculating, setIsCalculating] = useState(false);
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchSuppliers();
-      fetchSupply();
-    }
-  }, [status, fetchSupply]);
-
-  // Auto-calculate balance for admin
-  useEffect(() => {
-    const isAdmin = session?.user?.role === "ADMIN";
-    if (!isAdmin || !formData.quantityBags || !formData.unitPrice) return;
-
-    const qty = parseFloat(formData.quantityBags);
-    const price = parseFloat(formData.unitPrice);
-    const paid = parseFloat(formData.amountPaid) || 0;
-
-    if (!isNaN(qty) && !isNaN(price)) {
-      const total = qty * price;
-      const balance = total - paid;
-      setFormData((prev) => ({
-        ...prev,
-        balanceAmount: balance.toFixed(2),
-      }));
-
-      if (balance > 0.01) {
-        setFormData((prev) => ({ ...prev, paymentStatus: "UNDERPAID" }));
-      } else if (balance < -0.01) {
-        setFormData((prev) => ({ ...prev, paymentStatus: "OVERPAID" }));
-      } else {
-        setFormData((prev) => ({ ...prev, paymentStatus: "BALANCED" }));
-      }
-    }
-  }, [
-    formData.quantityBags,
-    formData.unitPrice,
-    formData.amountPaid,
-    session?.user?.role,
-  ]);
-
   const fetchSuppliers = async () => {
     try {
       const response = await fetch("/api/suppliers?limit=1000");
@@ -108,6 +69,45 @@ export default function EditSupplyPage({ params }) {
       setLoading(false);
     }
   }, [supplyId]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchSuppliers();
+      fetchSupply();
+    }
+  }, [status, fetchSupply]);
+
+  // Auto-calculate balance for admin
+  useEffect(() => {
+    const isAdmin = session?.user?.role === "ADMIN";
+    if (!isAdmin || !formData.quantityBags || !formData.unitPrice) return;
+
+    const qty = parseFloat(formData.quantityBags);
+    const price = parseFloat(formData.unitPrice);
+    const paid = parseFloat(formData.amountPaid) || 0;
+
+    if (!isNaN(qty) && !isNaN(price)) {
+      const total = qty * price;
+      const balance = total - paid;
+      setFormData((prev) => ({
+        ...prev,
+        balanceAmount: balance.toFixed(2),
+      }));
+
+      if (balance > 0.01) {
+        setFormData((prev) => ({ ...prev, paymentStatus: "UNDERPAID" }));
+      } else if (balance < -0.01) {
+        setFormData((prev) => ({ ...prev, paymentStatus: "OVERPAID" }));
+      } else {
+        setFormData((prev) => ({ ...prev, paymentStatus: "BALANCED" }));
+      }
+    }
+  }, [
+    formData.quantityBags,
+    formData.unitPrice,
+    formData.amountPaid,
+    session?.user?.role,
+  ]);
 
   if (status === "loading") return <div className="p-6">Loading...</div>;
   if (!session || !["ADMIN", "STAFF"].includes(session.user.role))
